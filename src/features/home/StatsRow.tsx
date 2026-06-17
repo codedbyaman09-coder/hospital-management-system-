@@ -1,4 +1,4 @@
-import { User, Brain, HeartPulse, Headset } from "lucide-react";
+import { Headset } from "lucide-react";
 import Image from "next/image";
 
 export default function StatsRow() {

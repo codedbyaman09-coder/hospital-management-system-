@@ -11,8 +11,9 @@ export default function AboutStats() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-      <div className="bg-gradient-to-r from-[#0d4f48] via-[#104b73] to-[#041a38] rounded-xl shadow-xl flex flex-wrap lg:flex-nowrap justify-between items-center py-10 px-4 lg:px-8 border border-[#1b6b85] divide-y lg:divide-y-0 lg:divide-x divide-white/10">
+    <div className="w-full bg-gradient-to-r from-[#0d4f48] via-[#104b73] to-[#041a38] border-y border-[#1b6b85]">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <div className="flex flex-wrap lg:flex-nowrap justify-between items-center py-6 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
         {stats.map((stat, idx) => (
           <div key={idx} className="flex flex-col items-center justify-center flex-1 min-w-[140px] text-center gap-3">
             <div className="text-white mb-2">
@@ -24,6 +25,7 @@ export default function AboutStats() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
