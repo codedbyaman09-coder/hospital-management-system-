@@ -1,6 +1,12 @@
+"use client";
+
 import { ChevronDown, Menu } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
   return (
     <nav className="flex justify-between items-center px-4 lg:px-8 py-5 bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
       <div className="flex items-center gap-2">
@@ -27,12 +33,18 @@ export default function Navbar() {
       </div>
 
       <div className="hidden lg:flex items-center gap-8 font-medium text-gray-600 text-[15px]">
-        <a href="#" className="text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold">
+        <Link 
+          href="/" 
+          className={pathname === "/" ? "text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold" : "hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent"}
+        >
           Home
-        </a>
-        <a href="#" className="hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
+        </Link>
+        <Link 
+          href="/about" 
+          className={pathname === "/about" ? "text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold" : "hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent"}
+        >
           About Us
-        </a>
+        </Link>
         <div className="flex items-center gap-1 cursor-pointer hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
           Departments <ChevronDown className="w-4 h-4 text-gray-400" />
         </div>
