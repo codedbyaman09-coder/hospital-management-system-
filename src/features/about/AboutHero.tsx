@@ -8,11 +8,11 @@ export default function AboutHero() {
       {/* Background Image Full Width without any white shadow/gradient */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Image
-          src="/images/about_team.png"
-          alt="Medical Team"
+          src="/images/about_hero_bg.png"
+          alt="CityCare Hospital Building"
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain object-bottom"
+          sizes="100vw"
+          className="object-cover object-center"
           priority
         />
       </div>
