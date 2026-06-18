@@ -47,6 +47,7 @@ export default function LeadershipTeam() {
                   src={member.img}
                   alt={member.name}
                   fill
+                  sizes="96px"
                   className="object-cover object-top"
                 />
               </div>

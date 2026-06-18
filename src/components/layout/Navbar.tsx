@@ -51,9 +51,12 @@ export default function Navbar() {
         >
           Departments
         </Link>
-        <a href="#" className="hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
+        <Link 
+          href="/doctors" 
+          className={pathname === "/doctors" ? "text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold" : "hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent"}
+        >
           Doctors
-        </a>
+        </Link>
         <a href="#" className="hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
           Services
         </a>
@@ -69,7 +72,10 @@ export default function Navbar() {
       </div>
 
       <div className="hidden lg:block">
-        <button className="bg-[#0a335c] hover:bg-[#082a4d] text-white px-7 py-3 rounded-md text-[15px] font-semibold transition shadow-md shadow-blue-900/20">
+        <button 
+          onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+          className="bg-[#0a335c] hover:bg-[#082a4d] text-white px-7 py-3 rounded-md text-[15px] font-semibold transition shadow-md shadow-blue-900/20"
+        >
           Book Appointment
         </button>
       </div>

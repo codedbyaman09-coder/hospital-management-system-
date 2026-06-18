@@ -31,6 +31,7 @@ export default function DepartmentsHero() {
           src="/images/departments_hero_bg.png"
           alt="CityCare Departments"
           fill
+          sizes="100vw"
           className="object-cover object-center"
           priority
         />

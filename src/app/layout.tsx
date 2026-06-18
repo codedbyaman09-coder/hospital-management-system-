@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "Compassionate Care for a Healthier Life",
 };
 
+import AppointmentModal from "@/components/forms/AppointmentModal";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-gray-800">{children}</body>
+      <body className="min-h-full flex flex-col bg-white text-gray-800">
+        {children}
+        <AppointmentModal />
+      </body>
     </html>
   );
 }

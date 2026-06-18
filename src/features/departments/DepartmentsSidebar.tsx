@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { UserCheck, Microscope, HeartHandshake, ShieldCheck, PhoneCall, FileText } from "lucide-react";
@@ -35,7 +37,10 @@ export default function DepartmentsSidebar() {
           <p className="text-blue-100/90 text-[13px] leading-relaxed mb-8 pr-2 max-w-[220px]">
             Our departments work together to provide comprehensive healthcare for a better and healthier tomorrow.
           </p>
-          <button className="bg-[#009e90] hover:bg-[#008f82] text-white px-5 py-2.5 rounded-md text-[14px] font-semibold transition flex items-center gap-2">
+          <button 
+            onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+            className="bg-[#009e90] hover:bg-[#008f82] text-white px-5 py-2.5 rounded-md text-[14px] font-semibold transition flex items-center gap-2"
+          >
             Book Appointment <span>→</span>
           </button>
         </div>

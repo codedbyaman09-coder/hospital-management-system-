@@ -21,6 +21,7 @@ export default function StatsRow() {
                 alt={stat.alt || "Stats Image"} 
                 width={180} 
                 height={70} 
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain"
               />
             ) : (

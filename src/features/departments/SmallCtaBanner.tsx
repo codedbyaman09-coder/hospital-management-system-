@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function SmallCtaBanner() {
@@ -19,6 +21,7 @@ export default function SmallCtaBanner() {
               src="/images/team_ceo.png" 
               alt="Doctor" 
               fill 
+              sizes="64px"
               className="object-cover object-top"
             />
           </div>
@@ -31,7 +34,10 @@ export default function SmallCtaBanner() {
         </div>
 
         <div className="flex-shrink-0 w-full md:w-auto flex justify-start md:justify-end">
-          <button className="bg-[#009e90] hover:bg-[#008f82] text-white px-5 py-2.5 rounded-md text-[14px] font-semibold transition flex items-center gap-2 shadow-md shadow-teal-900/10">
+          <button 
+            onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+            className="bg-[#009e90] hover:bg-[#008f82] text-white px-5 py-2.5 rounded-md text-[14px] font-semibold transition flex items-center gap-2 shadow-md shadow-teal-900/10"
+          >
             Book Appointment Now <span>→</span>
           </button>
         </div>

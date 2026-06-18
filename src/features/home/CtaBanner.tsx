@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function CtaBanner() {
@@ -23,7 +25,10 @@ export default function CtaBanner() {
 
         {/* Button Section */}
         <div className="relative z-20 flex-1 flex justify-center lg:-ml-10">
-          <button className="bg-white text-[#009e90] px-6 py-3 rounded-md font-semibold text-[15px] hover:bg-gray-50 transition shadow-sm">
+          <button 
+            onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+            className="bg-white text-[#009e90] px-6 py-3 rounded-md font-semibold text-[15px] hover:bg-gray-50 transition shadow-sm"
+          >
             Book Appointment Now
           </button>
         </div>
@@ -34,6 +39,7 @@ export default function CtaBanner() {
             src="/images/dcotor.png"
             alt="Doctor"
             fill
+            sizes="(max-width: 768px) 100vw, 240px"
             className="object-contain object-bottom"
           />
         </div>

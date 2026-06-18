@@ -2,10 +2,19 @@
 
 import { useState, cloneElement } from "react";
 import { HeartPulse, Brain, Bone, Baby, Users, Smile, Stethoscope, Droplets, Ear, Eye, Beaker, Wind, Activity, Ribbon, Scissors, Siren, Microscope, Syringe, Radio, PersonStanding, ActivitySquare, X, Check } from "lucide-react";
-import Link from "next/link";
+import Image from "next/image";
+
+interface Department {
+  name: string;
+  desc: string;
+  icon: React.ReactElement;
+  bgColor: string;
+  iconColor: string;
+  services: string[];
+}
 
 export default function DepartmentGrid() {
-  const [selectedDept, setSelectedDept] = useState<any>(null);
+  const [selectedDept, setSelectedDept] = useState<Department | null>(null);
 
   const departments = [
     {
@@ -196,7 +205,7 @@ export default function DepartmentGrid() {
           </div>
         ))}
       </div>
-      
+
       <div className="mt-8 flex justify-center lg:justify-start">
         <button className="bg-[#009e90] hover:bg-[#008f82] text-white px-6 py-2.5 rounded-md text-[14px] font-semibold transition shadow-md shadow-teal-900/20 flex items-center gap-2">
           View All Departments <span>→</span>
@@ -207,14 +216,14 @@ export default function DepartmentGrid() {
       {selectedDept && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:p-0">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-[#0a2b4e]/40 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedDept(null)}
           ></div>
-          
+
           {/* Modal Content */}
           <div className="bg-[#f4f9f8] rounded-3xl w-full max-w-2xl relative z-10 overflow-y-auto max-h-[90vh] shadow-2xl animate-in fade-in zoom-in duration-200 p-6 md:p-8">
-            <button 
+            <button
               onClick={() => setSelectedDept(null)}
               className="absolute top-5 right-5 text-gray-500 hover:text-gray-800 transition"
             >
@@ -228,7 +237,7 @@ export default function DepartmentGrid() {
               </div>
               <div className="pt-1">
                 <h3 className="text-[22px] md:text-[24px] font-bold text-[#0a2b4e] leading-tight mb-1">
-                  {selectedDept.name} Department:<br/>Comprehensive {selectedDept.name === 'Cardiology' ? 'Heart' : selectedDept.name} Care
+                  {selectedDept.name} Department:<br />Comprehensive {selectedDept.name === 'Cardiology' ? 'Heart' : selectedDept.name} Care
                 </h3>
                 <p className="text-gray-600 text-[14px]">Advanced Diagnostics and Treatment Options</p>
               </div>
@@ -270,7 +279,7 @@ export default function DepartmentGrid() {
                 ].map((doc, i) => (
                   <div key={i} className="bg-white rounded-xl p-3 flex items-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-50">
                     <div className="w-12 h-12 rounded-full overflow-hidden relative bg-gray-100 flex-shrink-0">
-                      <img src={doc.img} alt={doc.name} className="w-full h-full object-cover object-top" />
+                      <Image src={doc.img} alt={doc.name} fill sizes="48px" className="object-cover object-top" />
                     </div>
                     <div>
                       <h5 className="text-[#0a2b4e] text-[13px] font-bold leading-tight">{doc.name}</h5>
@@ -282,9 +291,11 @@ export default function DepartmentGrid() {
               </div>
             </div>
 
-            {/* Footer Area */}
             <div className="border-t border-gray-200/60 pt-5 text-center">
-              <button className="text-[#009e90] font-bold text-[16px] hover:text-[#008f82] transition inline-flex items-center gap-1.5">
+              <button 
+                onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+                className={`${selectedDept.iconColor} font-bold text-[16px] hover:opacity-80 transition inline-flex items-center gap-1.5`}
+              >
                 Schedule Consultation <span>→</span>
               </button>
             </div>
