@@ -6,12 +6,35 @@ import DepartmentGrid from "@/features/departments/DepartmentGrid";
 import DepartmentsSidebar from "@/features/departments/DepartmentsSidebar";
 import AboutStats from "@/features/about/AboutStats";
 import SmallCtaBanner from "@/features/departments/SmallCtaBanner";
+import { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = {
+  title: "Medical Departments & Specialties",
+  description: "Explore CityCare Hospital's comprehensive medical departments including Cardiology, Neurology, Orthopedics, Pediatrics, and more.",
+  alternates: {
+    canonical: "/departments",
+  },
+};
 
 export default function DepartmentsPage() {
   return (
     <main className="min-h-screen bg-white">
       <TopBar />
       <Navbar />
+      <JsonLd 
+        data={{
+          "@context": "https://schema.org",
+          "@type": "MedicalOrganization",
+          "name": "CityCare Hospital Departments",
+          "url": "https://citycarehospital.com/departments",
+          "description": "Comprehensive medical departments including Cardiology, Neurology, Orthopedics, and Pediatrics.",
+          "parentOrganization": {
+            "@type": "Hospital",
+            "name": "CityCare Hospital"
+          }
+        }}
+      />
       <DepartmentsHero />
       
       <section className="py-16">
