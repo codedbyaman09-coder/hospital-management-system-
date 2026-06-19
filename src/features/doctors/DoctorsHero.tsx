@@ -1,14 +1,15 @@
 import { UserCheck, Award, SmilePlus } from "lucide-react";
+import Image from "next/image";
 
 export default function DoctorsHero() {
   return (
     <section
-      className="w-full py-16 md:py-24 relative overflow-hidden bg-gradient-to-r from-[#eef5fa] to-[#dbeefa]"
+      className="w-full pt-0 pb-0 relative overflow-hidden bg-gradient-to-r from-[#eef5fa] to-[#dbeefa]"
     >
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between -mt-12 md:-mt-16">
 
         {/* Left Content */}
-        <div className="w-full md:w-1/2 pt-8 md:pt-12">
+        <div className="w-full md:w-1/2 pt-0 pb-2 md:pb-4">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[13px] font-semibold text-[#009e90] mb-6">
             <span className="text-[#0a335c]">Home</span>
@@ -57,6 +58,18 @@ export default function DoctorsHero() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Right Content - Image */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-end mt-8 md:mt-0 items-end self-end -mb-12 md:-mb-20">
+          <Image
+            src="/images/docotrs girls.png"
+            alt="Expert Doctors"
+            width={700}
+            height={700}
+            className="object-contain max-h-[500px] md:max-h-[600px] w-auto object-bottom"
+            priority
+          />
         </div>
 
       </div>

@@ -99,27 +99,46 @@ export default function DoctorsGrid() {
         <p className="text-gray-500 text-[14px]">Find the right doctor for your health needs from our wide range of specialists.</p>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-12">
-        <select className="flex-1 min-w-[200px] border border-gray-200 rounded-md px-4 py-2.5 text-[14px] text-gray-600 focus:outline-none focus:border-[#009e90]">
-          <option>All Specialties</option>
-        </select>
-        <select className="flex-1 min-w-[200px] border border-gray-200 rounded-md px-4 py-2.5 text-[14px] text-gray-600 focus:outline-none focus:border-[#009e90]">
-          <option>All Departments</option>
-        </select>
-        <select className="flex-1 min-w-[200px] border border-gray-200 rounded-md px-4 py-2.5 text-[14px] text-gray-600 focus:outline-none focus:border-[#009e90]">
-          <option>All Experience</option>
-        </select>
-        <div className="flex-1 min-w-[250px] flex items-center">
-          <div className="relative flex-1">
+      {/* Filters - Modern Unified Style */}
+      <div className="flex flex-col md:flex-row items-center justify-between bg-white p-2 rounded-2xl md:rounded-full shadow-[0_10px_40px_rgb(0,0,0,0.06)] border border-gray-100 mb-12 md:divide-x divide-gray-100 gap-y-4 md:gap-y-0">
+        
+        <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/50 transition cursor-pointer md:rounded-l-full">
+          <select className="w-full bg-transparent text-[14.5px] font-medium text-gray-600 focus:outline-none cursor-pointer appearance-none">
+            <option>All Specialties</option>
+            <option>Cardiologist</option>
+            <option>Neurologist</option>
+            <option>Orthopedic</option>
+          </select>
+        </div>
+
+        <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/50 transition cursor-pointer">
+          <select className="w-full bg-transparent text-[14.5px] font-medium text-gray-600 focus:outline-none cursor-pointer appearance-none">
+            <option>All Departments</option>
+            <option>Emergency</option>
+            <option>OPD</option>
+            <option>ICU</option>
+          </select>
+        </div>
+
+        <div className="flex-1 w-full px-4 py-2 hover:bg-gray-50/50 transition cursor-pointer">
+          <select className="w-full bg-transparent text-[14.5px] font-medium text-gray-600 focus:outline-none cursor-pointer appearance-none">
+            <option>All Experience</option>
+            <option>5+ Years</option>
+            <option>10+ Years</option>
+            <option>15+ Years</option>
+          </select>
+        </div>
+
+        <div className="flex-[1.5] w-full flex items-center pl-4 pr-1 py-1">
+          <div className="relative flex-1 flex items-center">
+            <SearchIcon className="w-4 h-4 text-[#009e90] mr-2" />
             <input 
               type="text" 
               placeholder="Search Doctor by name..." 
-              className="w-full border border-gray-200 rounded-l-md px-4 py-2.5 text-[14px] focus:outline-none focus:border-[#009e90]"
+              className="w-full bg-transparent text-[14.5px] focus:outline-none text-gray-700 placeholder-gray-400"
             />
-            <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
-          <button className="bg-[#0a2b4e] hover:bg-[#061d36] text-white px-6 py-2.5 rounded-r-md text-[14px] font-semibold transition">
+          <button className="bg-gradient-to-r from-[#0a2b4e] to-[#0d3b6b] hover:shadow-md text-white px-8 py-3 rounded-full text-[14px] font-semibold transition-all hover:-translate-y-[1px] ml-2">
             Search
           </button>
         </div>
