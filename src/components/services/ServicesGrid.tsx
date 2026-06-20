@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { servicesData, ServiceCategory } from '../../data/servicesData';
+import { servicesData, ServiceCategory, ServiceItem } from '../../data/servicesData';
 import { ArrowRight } from 'lucide-react';
 import DiagnosticsModal from './DiagnosticsModal';
 

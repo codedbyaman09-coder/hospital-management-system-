@@ -1,4 +1,4 @@
-import { Heart, Activity, Stethoscope, Microscope, Pill, Baby, UserPlus, PhoneCall, Syringe, Ambulance, Users, HeartPulse } from "lucide-react";
+import { Heart, Activity, Stethoscope, Microscope, Pill, Baby, UserPlus, Syringe, Ambulance, Users, HeartPulse } from "lucide-react";
 
 export type ServiceCategory = "All Services" | "Diagnostics" | "Treatment & Care" | "Surgery" | "Wellness" | "Support Services";
 

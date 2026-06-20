@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { X, CheckCircle2, Calendar, Clock, Activity, Users, Star, Award, PhoneCall, ArrowRight } from 'lucide-react';
+import { X, CheckCircle2, Calendar, Clock, Activity, Star, Award, PhoneCall, ArrowRight } from 'lucide-react';
 import { ServiceItem } from '../../data/servicesData';
 
 interface DiagnosticsModalProps {

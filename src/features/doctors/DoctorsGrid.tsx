@@ -5,8 +5,19 @@ import { Star, Calendar } from "lucide-react";
 import React, { useState } from "react";
 import DoctorProfileModal from "./DoctorProfileModal";
 
+interface Doctor {
+  id: number;
+  name: string;
+  specialty: string;
+  desc: string;
+  rating: number;
+  reviews: number;
+  exp: string;
+  img: string;
+}
+
 export default function DoctorsGrid() {
-  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const doctors = [
     {
       id: 1,

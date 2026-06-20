@@ -7,7 +7,7 @@ import Image from "next/image";
 interface Department {
   name: string;
   desc: string;
-  icon: React.ReactElement<any>;
+  icon: React.ReactElement<{ className?: string; strokeWidth?: number }>;
   bgColor: string;
   iconColor: string;
   services: string[];
