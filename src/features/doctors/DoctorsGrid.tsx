@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { Star, Calendar } from "lucide-react";
+import React, { useState } from "react";
+import DoctorProfileModal from "./DoctorProfileModal";
 
 export default function DoctorsGrid() {
+  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const doctors = [
     {
       id: 1,
@@ -174,7 +177,10 @@ export default function DoctorsGrid() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <button className="w-full border border-[#0a2b4e] text-[#0a2b4e] hover:bg-[#0a2b4e] hover:text-white py-2 rounded-md text-[13px] font-semibold transition flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => setSelectedDoctor(doc)}
+                  className="w-full border border-[#0a2b4e] text-[#0a2b4e] hover:bg-[#0a2b4e] hover:text-white py-2 rounded-md text-[13px] font-semibold transition flex items-center justify-center gap-2"
+                >
                   <UserIcon className="w-4 h-4" />
                   View Profile
                 </button>
@@ -190,6 +196,11 @@ export default function DoctorsGrid() {
           </div>
         ))}
       </div>
+
+      <DoctorProfileModal 
+        doctor={selectedDoctor} 
+        onClose={() => setSelectedDoctor(null)} 
+      />
     </section>
   );
 }

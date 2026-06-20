@@ -64,43 +64,59 @@ export default function DoctorsWhyChoose() {
         </div>
 
         {/* Need an Appointment Banner */}
-        <div className="bg-[#0a4276] rounded-xl overflow-hidden relative min-h-[140px] flex items-center">
-          {/* Background Gradient/Decoration */}
-          <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0a4276] via-[#0a4276] to-[#009e90]/90"></div>
+        <div className="rounded-xl overflow-hidden relative flex flex-col md:flex-row items-stretch border border-gray-100 shadow-sm mt-8 min-h-[160px]">
           
-          <div className="absolute inset-0 z-0 opacity-20 flex items-center justify-center">
-            <svg width="100%" height="60" viewBox="0 0 1000 60" preserveAspectRatio="none" fill="none">
-              <path d="M0,30 L300,30 L315,10 L330,50 L345,5 L360,45 L375,30 L1000,30" stroke="white" strokeWidth="2" />
-            </svg>
-          </div>
-
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full p-8 md:px-12 gap-6">
-            <div className="text-white max-w-md">
-              <h3 className="text-[24px] font-bold mb-2">Need an Appointment?</h3>
-              <p className="text-blue-100/80 text-[13px] leading-relaxed">
+          {/* Left section: Dark Blue */}
+          <div className="flex-[1.5] bg-[#094170] relative flex items-center overflow-hidden py-8 md:py-0">
+            {/* ECG line SVG overlay */}
+            <div className="absolute inset-0 z-0 opacity-20 flex items-center w-full">
+              <svg width="100%" height="60" viewBox="0 0 1000 60" preserveAspectRatio="none" fill="none">
+                <path d="M0,30 L300,30 L315,10 L330,50 L345,5 L360,45 L375,30 L1000,30" stroke="white" strokeWidth="1.5" />
+              </svg>
+            </div>
+            
+            <div className="relative z-10 px-8 md:pl-12 w-full">
+              <h3 className="text-white text-[24px] md:text-[28px] font-bold mb-2">Need an Appointment?</h3>
+              <p className="text-blue-100/80 text-[14px] leading-relaxed max-w-[400px]">
                 Book an appointment with our specialist doctors and get the best healthcare services.
               </p>
             </div>
-
-            <div className="flex-shrink-0 md:mr-32 relative z-20">
-              <button 
-                onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
-                className="bg-white text-[#0a2b4e] px-6 py-3 rounded-md text-[14px] font-bold transition flex items-center gap-2 hover:bg-gray-50"
-              >
-                Book Appointment Now <span className="text-gray-400">→</span>
-              </button>
-            </div>
           </div>
 
-          {/* Doctor Image overlapping right side */}
-          <div className="hidden md:block absolute right-4 bottom-0 w-[180px] h-[160px] z-10 pointer-events-none">
-            <Image 
-              src="/images/doc_gyne.png" 
-              alt="Doctor" 
-              fill 
-              sizes="(max-width: 768px) 100vw, 180px"
-              className="object-contain object-bottom"
-            />
+          {/* Right section: Doctor Image & Teal strip (Desktop) */}
+          <div className="hidden md:flex flex-1 relative max-w-[350px]">
+             {/* The image container */}
+             <div className="flex-1 bg-[#f1f4f6] relative h-full">
+               <Image 
+                 src="/images/doc_gyne.png" 
+                 alt="Doctor" 
+                 fill 
+                 className="object-cover object-top"
+               />
+             </div>
+             
+             {/* Teal strip */}
+             <div className="w-10 bg-[#009e90]"></div>
+
+             {/* Overlapping Button */}
+             <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                <button 
+                  onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+                  className="bg-white text-[#0a2b4e] px-5 py-3 rounded-md text-[14px] font-bold shadow-md flex items-center gap-2 hover:bg-gray-50 transition whitespace-nowrap"
+                >
+                  Book Appointment Now <span className="text-gray-400 ml-1">→</span>
+                </button>
+             </div>
+          </div>
+
+          {/* Mobile Button (shown only on small screens) */}
+          <div className="md:hidden bg-[#094170] px-8 pb-8 relative z-10">
+             <button 
+                onClick={() => window.dispatchEvent(new Event('open-appointment-modal'))}
+                className="bg-white text-[#0a2b4e] w-full py-3 rounded-md text-[14px] font-bold shadow-md flex justify-center items-center gap-2"
+              >
+                Book Appointment Now <span className="text-gray-400 ml-1">→</span>
+              </button>
           </div>
         </div>
 

@@ -57,9 +57,12 @@ export default function Navbar() {
         >
           Doctors
         </Link>
-        <a href="#" className="hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
+        <Link 
+          href="/services" 
+          className={pathname === "/services" ? "text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold" : "hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent"}
+        >
           Services
-        </a>
+        </Link>
         <div className="flex items-center gap-1 cursor-pointer hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
           Patients <ChevronDown className="w-4 h-4 text-gray-400" />
         </div>
