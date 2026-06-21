@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronDown, Menu, Users, Building2, User, FileText, Settings, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -69,12 +70,128 @@ export default function Navbar() {
         >
           Patients <ChevronDown className={`w-4 h-4 ${pathname === "/patients" ? 'text-[#0a335c]' : 'text-gray-400'}`} />
         </Link>
-        <div className="flex items-center gap-1 cursor-pointer hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
-          Pages <ChevronDown className="w-4 h-4 text-gray-400" />
+        <div className="relative group">
+          <div className="flex items-center gap-1 cursor-pointer hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
+            Pages <ChevronDown className="w-4 h-4 text-gray-400 group-hover:rotate-180 transition-transform duration-300" />
+          </div>
+          
+          {/* Mega Menu Dropdown */}
+          <div className="absolute top-[calc(100%+4px)] -right-[200px] xl:-right-[300px] pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <div className="w-[950px] bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 flex overflow-hidden">
+            
+            {/* Left Promo Section */}
+            <div className="w-[28%] bg-[#f4f8fb] p-8 flex flex-col relative">
+              <h3 className="text-[20px] font-bold text-[#0a335c] leading-tight mb-3">
+                World Class Care <br />
+                <span className="text-[#009e90]">For Every Patient</span>
+              </h3>
+              <p className="text-gray-600 text-[12px] leading-relaxed mb-6">
+                We are committed to providing exceptional healthcare with compassion and excellence.
+              </p>
+              <div className="mt-auto relative h-[180px] w-full rounded-lg overflow-hidden flex-shrink-0">
+                <Image 
+                  src="/images/Smiling doctor with happy patients.png" 
+                  alt="Happy patients" 
+                  fill 
+                  sizes="300px"
+                  className="object-cover object-center"
+                />
+              </div>
+            </div>
+
+            {/* Right Links Section */}
+            <div className="w-[72%] p-8 grid grid-cols-5 gap-6 border-l border-gray-100">
+              
+              {/* ABOUT PAGES */}
+              <div>
+                <h4 className="flex items-center gap-2 text-[#0a335c] font-bold text-[11px] uppercase tracking-wider mb-5">
+                  <Users className="w-4 h-4 text-[#009e90]" /> About Pages
+                </h4>
+                <ul className="space-y-3.5">
+                  {["About Us", "Our Mission & Vision", "Our Values", "Our History", "Leadership Team", "Careers", "Testimonials", "FAQs"].map((item, i) => (
+                    <li key={i}>
+                      <Link href="#" className="flex items-center gap-2 text-gray-500 hover:text-[#009e90] text-[12px] transition group/link">
+                        <ChevronRight className="w-3 h-3 text-[#009e90] group-hover/link:translate-x-0.5 transition-transform" /> {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* DEPARTMENT PAGES */}
+              <div>
+                <h4 className="flex items-center gap-2 text-[#0a335c] font-bold text-[11px] uppercase tracking-wider mb-5">
+                  <Building2 className="w-4 h-4 text-[#009e90]" /> Department Pages
+                </h4>
+                <ul className="space-y-3.5">
+                  {["Departments Grid", "Department Details", "Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Gynecology", "View All Departments"].map((item, i) => (
+                    <li key={i}>
+                      <Link href="#" className="flex items-center gap-2 text-gray-500 hover:text-[#009e90] text-[12px] transition group/link">
+                        <ChevronRight className="w-3 h-3 text-[#009e90] group-hover/link:translate-x-0.5 transition-transform" /> {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* DOCTOR PAGES */}
+              <div>
+                <h4 className="flex items-center gap-2 text-[#0a335c] font-bold text-[11px] uppercase tracking-wider mb-5">
+                  <User className="w-4 h-4 text-[#009e90]" /> Doctor Pages
+                </h4>
+                <ul className="space-y-3.5">
+                  {["Doctors Grid", "Doctor Details", "Book Appointment", "Doctor Schedule", "Our Specialists"].map((item, i) => (
+                    <li key={i}>
+                      <Link href="#" className="flex items-center gap-2 text-gray-500 hover:text-[#009e90] text-[12px] transition group/link">
+                        <ChevronRight className="w-3 h-3 text-[#009e90] group-hover/link:translate-x-0.5 transition-transform" /> {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* OTHER PAGES */}
+              <div>
+                <h4 className="flex items-center gap-2 text-[#0a335c] font-bold text-[11px] uppercase tracking-wider mb-5">
+                  <FileText className="w-4 h-4 text-[#009e90]" /> Other Pages
+                </h4>
+                <ul className="space-y-3.5">
+                  {["Services", "Patients", "Gallery", "Pricing Plans", "News & Articles", "Event", "404 Error Page", "Coming Soon"].map((item, i) => (
+                    <li key={i}>
+                      <Link href="#" className="flex items-center gap-2 text-gray-500 hover:text-[#009e90] text-[12px] transition group/link">
+                        <ChevronRight className="w-3 h-3 text-[#009e90] group-hover/link:translate-x-0.5 transition-transform" /> {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* UTILITY PAGES */}
+              <div>
+                <h4 className="flex items-center gap-2 text-[#0a335c] font-bold text-[11px] uppercase tracking-wider mb-5">
+                  <Settings className="w-4 h-4 text-[#009e90]" /> Utility Pages
+                </h4>
+                <ul className="space-y-3.5">
+                  {["Login", "Register", "Forgot Password", "Appointment Success", "Terms & Conditions", "Privacy Policy", "Sitemap"].map((item, i) => (
+                    <li key={i}>
+                      <Link href="#" className="flex items-center gap-2 text-gray-500 hover:text-[#009e90] text-[12px] transition group/link">
+                        <ChevronRight className="w-3 h-3 text-[#009e90] group-hover/link:translate-x-0.5 transition-transform" /> {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+            </div>
+            </div>
+          </div>
         </div>
-        <a href="#" className="hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent">
+        <Link 
+          href="/contact" 
+          className={pathname === "/contact" ? "text-[#0a335c] border-b-[2.5px] border-[#0a335c] pb-1.5 font-semibold" : "hover:text-[#0a335c] transition pb-1.5 border-b-[2.5px] border-transparent"}
+        >
           Contact Us
-        </a>
+        </Link>
       </div>
 
       <div className="hidden lg:block">
