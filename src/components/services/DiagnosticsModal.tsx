@@ -170,7 +170,13 @@ export default function DiagnosticsModal({ isOpen, onClose, service }: Diagnosti
                   Book your appointment today and receive fast, accurate, and reliable diagnostic services from our experts.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <button className="bg-white text-[#0B2D5B] hover:bg-gray-50 px-6 py-3 rounded-xl text-[14px] font-bold transition shadow-sm flex items-center gap-2">
+                  <button 
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new Event('open-appointment-modal'));
+                    }}
+                    className="bg-white text-[#0B2D5B] hover:bg-gray-50 px-6 py-3 rounded-xl text-[14px] font-bold transition shadow-sm flex items-center gap-2"
+                  >
                     Book Appointment <ArrowRight className="w-4 h-4 text-gray-400" />
                   </button>
                   <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-xl text-[14px] font-bold transition flex items-center gap-2">
