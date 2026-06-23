@@ -218,6 +218,13 @@ export default function LoginPage() {
                 Create an account
               </Link>
             </div>
+
+            {/* Admin Credentials Note */}
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800">
+              <p className="font-semibold mb-1">Demo Admin Credentials:</p>
+              <p>Email: <strong>admin@citycare.com</strong></p>
+              <p>Password: <strong>Password@123</strong></p>
+            </div>
           </div>
         </div>
       </div>
