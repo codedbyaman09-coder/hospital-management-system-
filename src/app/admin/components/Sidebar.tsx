@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   Home, Calendar, User, Users, Building, 
   DollarSign, Pill, Bed, FileText, Mail, 
@@ -7,22 +8,24 @@ import {
 } from 'lucide-react';
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
   const navItems = [
-    { name: 'Dashboard', icon: Home, active: true },
-    { name: 'Appointments', icon: Calendar },
-    { name: 'Patients', icon: User },
-    { name: 'Doctors', icon: User }, // Can use Stethoscope if available, fallback User
-    { name: 'Departments', icon: Building },
-    { name: 'Staff', icon: Users },
-    { name: 'Billing & Payments', icon: DollarSign },
-    { name: 'Pharmacy', icon: Pill },
-    { name: 'Beds & Rooms', icon: Bed },
-    { name: 'Reports', icon: FileText },
-    { name: 'Messages', icon: Mail, badge: '5' },
-    { name: 'Notifications', icon: Bell },
-    { name: 'Settings', icon: Settings },
-    { name: 'Users & Roles', icon: Users },
-    { name: 'Activity Logs', icon: Clock },
+    { name: 'Dashboard', icon: Home, active: pathname === '/admin', href: '/admin' },
+    { name: 'Appointments', icon: Calendar, active: pathname === '/admin/appointments', href: '/admin/appointments' },
+    { name: 'Patients', icon: User, active: pathname === '/admin/patients', href: '#' },
+    { name: 'Doctors', icon: User, active: pathname === '/admin/doctors', href: '#' },
+    { name: 'Departments', icon: Building, active: pathname === '/admin/departments', href: '#' },
+    { name: 'Staff', icon: Users, active: pathname === '/admin/staff', href: '#' },
+    { name: 'Billing & Payments', icon: DollarSign, active: pathname === '/admin/billing', href: '#' },
+    { name: 'Pharmacy', icon: Pill, active: pathname === '/admin/pharmacy', href: '#' },
+    { name: 'Beds & Rooms', icon: Bed, active: pathname === '/admin/beds', href: '#' },
+    { name: 'Reports', icon: FileText, active: pathname === '/admin/reports', href: '#' },
+    { name: 'Messages', icon: Mail, badge: '5', active: pathname === '/admin/messages', href: '#' },
+    { name: 'Notifications', icon: Bell, active: pathname === '/admin/notifications', href: '#' },
+    { name: 'Settings', icon: Settings, active: pathname === '/admin/settings', href: '#' },
+    { name: 'Users & Roles', icon: Users, active: pathname === '/admin/users', href: '#' },
+    { name: 'Activity Logs', icon: Clock, active: pathname === '/admin/logs', href: '#' },
   ];
 
   return (
@@ -65,7 +68,7 @@ export default function Sidebar() {
           {navItems.map((item) => (
             <li key={item.name}>
               <Link 
-                href="#"
+                href={item.href || "#"}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   item.active 
                     ? 'bg-[#1d4ed8] text-white font-medium' 
