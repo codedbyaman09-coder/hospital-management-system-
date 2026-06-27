@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "antd": "^4.24.16",
+    "antd-country-phone-input": "^4.5.1",
     "axios": "^1.18.0",
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
@@ -20,7 +22,9 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.80.0",
+    "react-phone-input-2": "^2.15.1",
     "recharts": "^3.9.0",
+    "world_countries_lists": "^2.9.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
