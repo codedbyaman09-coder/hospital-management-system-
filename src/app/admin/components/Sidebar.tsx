@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -7,16 +8,16 @@ import {
   Bell, Settings, Clock, Phone, Plus
 } from 'lucide-react';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = false, setIsOpen = () => {} }: { isOpen?: boolean, setIsOpen?: (open: boolean) => void }) {
   const pathname = usePathname();
 
   const navItems = [
     { name: 'Dashboard', icon: Home, active: pathname === '/admin', href: '/admin' },
     { name: 'Appointments', icon: Calendar, active: pathname === '/admin/appointments', href: '/admin/appointments' },
-    { name: 'Patients', icon: User, active: pathname === '/admin/patients', href: '#' },
-    { name: 'Doctors', icon: User, active: pathname === '/admin/doctors', href: '#' },
-    { name: 'Departments', icon: Building, active: pathname === '/admin/departments', href: '#' },
-    { name: 'Staff', icon: Users, active: pathname === '/admin/staff', href: '#' },
+    { name: 'Patients', icon: User, active: pathname === '/admin/patients', href: '/admin/patients' },
+    { name: 'Doctors', icon: User, active: pathname === '/admin/doctors', href: '/admin/doctors' },
+    { name: 'Departments', icon: Building, active: pathname === '/admin/departments', href: '/admin/departments' },
+    { name: 'Staff', icon: Users, active: pathname === '/admin/staff', href: '/admin/staff' },
     { name: 'Billing & Payments', icon: DollarSign, active: pathname === '/admin/billing', href: '#' },
     { name: 'Pharmacy', icon: Pill, active: pathname === '/admin/pharmacy', href: '#' },
     { name: 'Beds & Rooms', icon: Bed, active: pathname === '/admin/beds', href: '#' },
@@ -29,8 +30,18 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-[260px] h-screen bg-[#111828] text-[#9CA3AF] flex flex-col font-sans shrink-0 fixed left-0 top-0 overflow-hidden">
-      {/* Logo Section */}
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`w-[260px] h-screen bg-[#111828] text-[#9CA3AF] flex flex-col font-sans shrink-0 fixed left-0 top-0 overflow-hidden z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        {/* Logo Section */}
       <div className="flex items-center px-6 py-5">
         <div className="flex items-center">
           <div className="relative w-8 h-8 mr-3">
@@ -69,6 +80,7 @@ export default function Sidebar() {
             <li key={item.name}>
               <Link 
                 href={item.href || "#"}
+                onClick={() => setIsOpen(false)}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   item.active 
                     ? 'bg-[#1d4ed8] text-white font-medium' 
@@ -103,5 +115,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

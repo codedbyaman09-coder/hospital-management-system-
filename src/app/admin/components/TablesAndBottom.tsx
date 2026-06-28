@@ -1,15 +1,27 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { Users, Shield, Lock, Bell, CalendarPlus, UserPlus, FileText, Activity } from 'lucide-react';
 
-const appointmentsData = [
-  { id: 1, patient: 'Ali Raza', avatar: 'https://i.pravatar.cc/150?u=1', doctor: 'Dr. Sarah Khan', dept: 'Cardiology', date: 'May 26, 2024\n10:00 AM', status: 'Confirmed' },
-  { id: 2, patient: 'Fatima Noor', avatar: 'https://i.pravatar.cc/150?u=2', doctor: 'Dr. Usman Ali', dept: 'Neurology', date: 'May 26, 2024\n11:30 AM', status: 'Confirmed' },
-  { id: 3, patient: 'Ahmed Hassan', avatar: 'https://i.pravatar.cc/150?u=3', doctor: 'Dr. Maria Ahmed', dept: 'Orthopedics', date: 'May 26, 2024\n12:00 PM', status: 'Pending' },
-  { id: 4, patient: 'Ayesha Malik', avatar: 'https://i.pravatar.cc/150?u=4', doctor: 'Dr. Hamza Qureshi', dept: 'Dermatology', date: 'May 26, 2024\n02:30 PM', status: 'Cancelled' },
-  { id: 5, patient: 'Bilal Ahmed', avatar: 'https://i.pravatar.cc/150?u=5', doctor: 'Dr. Sarah Khan', dept: 'Cardiology', date: 'May 26, 2024\n03:00 PM', status: 'Confirmed' },
-];
+interface AppointmentItem {
+  _id?: string;
+  patientName: string;
+  pAvatar?: string;
+  doctorName: string;
+  dept: string;
+  date: string;
+  time: string;
+  status: string;
+}
 
-export function RecentAppointmentsTable() {
+interface DepartmentItem {
+  _id?: string;
+  name: string;
+  activePatients: number;
+  color?: string;
+}
+
+export function RecentAppointmentsTable({ appointments = [] }: { appointments?: AppointmentItem[] }) {
+  // If no backend appointments, fallback to empty array or some message. We'll use the ones passed from parent.
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] col-span-2">
       <div className="flex justify-between items-center mb-6">
@@ -31,20 +43,20 @@ export function RecentAppointmentsTable() {
             </tr>
           </thead>
           <tbody>
-            {appointmentsData.map((item, index) => (
-              <tr key={item.id} className={index !== appointmentsData.length - 1 ? 'border-b border-gray-50' : ''}>
+            {appointments.length > 0 ? appointments.map((item: AppointmentItem, index: number) => (
+              <tr key={item._id || index} className={index !== appointments.length - 1 ? 'border-b border-gray-50' : ''}>
                 <td className="py-3">
                   <div className="flex items-center">
-                    <img src={item.avatar} alt={item.patient} className="w-8 h-8 rounded-full mr-3 object-cover" />
-                    <span className="font-medium text-gray-800">{item.patient}</span>
+                    <img src={item.pAvatar || 'https://i.pravatar.cc/150'} alt={item.patientName} className="w-8 h-8 rounded-full mr-3 object-cover" />
+                    <span className="font-medium text-gray-800">{item.patientName}</span>
                   </div>
                 </td>
-                <td className="py-3 text-gray-600">{item.doctor}</td>
+                <td className="py-3 text-gray-600">{item.doctorName}</td>
                 <td className="py-3 text-gray-600">{item.dept}</td>
-                <td className="py-3 text-gray-600 whitespace-pre-line text-xs">{item.date}</td>
+                <td className="py-3 text-gray-600 whitespace-pre-line text-xs">{item.date}{'\n'}{item.time}</td>
                 <td className="py-3 text-right">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${
-                    item.status === 'Confirmed' ? 'bg-green-50 text-green-600 border border-green-100' :
+                    item.status === 'Confirmed' || item.status === 'Completed' ? 'bg-green-50 text-green-600 border border-green-100' :
                     item.status === 'Pending' ? 'bg-orange-50 text-orange-500 border border-orange-100' :
                     'bg-red-50 text-red-500 border border-red-100'
                   }`}>
@@ -52,7 +64,11 @@ export function RecentAppointmentsTable() {
                   </span>
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan={5} className="text-center py-4 text-gray-500">No recent appointments found.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -60,15 +76,15 @@ export function RecentAppointmentsTable() {
   );
 }
 
-const deptData = [
-  { name: 'Cardiology', value: 320, max: 400, color: 'bg-blue-600' },
-  { name: 'Neurology', value: 280, max: 400, color: 'bg-green-500' },
-  { name: 'Orthopedics', value: 210, max: 400, color: 'bg-orange-500' },
-  { name: 'Pediatrics', value: 180, max: 400, color: 'bg-purple-500' },
-  { name: 'Gynecology', value: 150, max: 400, color: 'bg-red-500' },
-];
+export function DepartmentWiseAppointments({ departments = [] }: { departments?: DepartmentItem[] }) {
+  // If no backend data, fallback to empty. We use activePatients as the value.
+  const deptData = departments.slice(0, 5).map((d: DepartmentItem) => ({
+    name: d.name,
+    value: d.activePatients || 0,
+    max: 400, // or compute max
+    color: d.color ? d.color.replace('text-', 'bg-') : 'bg-blue-500' // rudimentary map
+  }));
 
-export function DepartmentWiseAppointments() {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
       <div className="flex justify-between items-center mb-6">
@@ -79,7 +95,7 @@ export function DepartmentWiseAppointments() {
       </div>
 
       <div className="space-y-5">
-        {deptData.map((item) => (
+        {deptData.length > 0 ? deptData.map((item) => (
           <div key={item.name}>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-700">{item.name}</span>
@@ -88,11 +104,13 @@ export function DepartmentWiseAppointments() {
             <div className="w-full bg-gray-100 rounded-full h-2">
               <div 
                 className={`${item.color} h-2 rounded-full`} 
-                style={{ width: `${(item.value / item.max) * 100}%` }}
+                style={{ width: `${Math.min((item.value / item.max) * 100, 100)}%` }}
               ></div>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="text-sm text-gray-500 text-center py-4">No department data available.</div>
+        )}
       </div>
     </div>
   );
@@ -102,7 +120,7 @@ export function SystemSummary() {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
       <h3 className="text-lg font-bold text-gray-800 mb-6">System Summary</h3>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="flex flex-col items-center justify-center">
           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mb-2">
             <Users className="w-5 h-5 text-blue-500" />
@@ -181,7 +199,7 @@ export function QuickActions() {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
       <h3 className="text-lg font-bold text-gray-800 mb-6">Quick Actions</h3>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button className="flex flex-col items-center justify-center p-4 bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl transition-colors group">
           <CalendarPlus className="w-8 h-8 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
           <span className="text-xs font-semibold text-blue-800 text-center leading-tight">Add<br/>Appointment</span>

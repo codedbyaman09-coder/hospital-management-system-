@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import { Menu, Calendar, ChevronDown, Search, Bell, Globe, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-export default function Header() {
+export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -19,7 +20,10 @@ export default function Header() {
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-10 w-full">
       <div className="flex items-center">
-        <button className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-full transition-colors mr-3">
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-full transition-colors mr-3 lg:hidden"
+        >
           <Menu className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>

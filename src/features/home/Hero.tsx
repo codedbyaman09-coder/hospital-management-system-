@@ -57,7 +57,7 @@ export default function Hero() {
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-4 gap-4 text-xs font-semibold text-[#0a335c] max-w-2xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold text-[#0a335c] max-w-2xl mt-8 lg:mt-0">
             <div className="flex items-center gap-3">
               <Clock className="w-6 h-6 text-[#0a335c]" />
               <span>

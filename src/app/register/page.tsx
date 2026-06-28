@@ -46,6 +46,7 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const passwordValue = watch('password', '');
 
   const onSubmit = async (data: RegisterFormValues) => {

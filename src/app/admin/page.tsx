@@ -1,8 +1,6 @@
 "use client";
 
-import React from 'react';
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import React, { useState, useEffect } from 'react';
 import StatCard from './components/StatCard';
 import dynamic from 'next/dynamic';
 
@@ -18,28 +16,78 @@ import {
   QuickActions 
 } from './components/TablesAndBottom';
 
-import { Calendar, Users, User, Bed, DollarSign } from 'lucide-react';
+import { Calendar, Users, User, Bed, DollarSign, Loader2 } from 'lucide-react';
+
+interface DashboardStats {
+  totalPatients: number;
+  totalDoctors: number;
+  totalAppointments: number;
+  totalDepartments: number;
+  totalBeds: number;
+  totalRevenue: number;
+}
+
+interface DashboardAppointment {
+  _id: string;
+  patientName: string;
+  pAvatar?: string;
+  doctorName: string;
+  dept: string;
+  date: string;
+  time: string;
+  status: string;
+}
+
+interface DashboardDepartment {
+  _id: string;
+  name: string;
+  activePatients: number;
+  color?: string;
+  status: string;
+}
 
 export default function AdminDashboardPage() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentAppointments, setRecentAppointments] = useState<DashboardAppointment[]>([]);
+  const [departments, setDepartments] = useState<DashboardDepartment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await fetch('/api/admin/dashboard');
+        const data = await res.json();
+        if (data.success) {
+          setStats(data.data.stats);
+          setRecentAppointments(data.data.recentAppointments || []);
+          setDepartments(data.data.departments || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-screen bg-[#f8fafc]">
+        <Loader2 className="w-10 h-10 text-[#5e35b1] animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-screen bg-[#f8fafc] font-sans overflow-hidden">
-      {/* Sidebar - fixed width */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col pl-[260px]">
-        {/* Header - fixed top */}
-        <Header />
-
-        {/* Scrollable Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <div className="max-w-[1600px] mx-auto space-y-6">
+    <main className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar w-full">
+      <div className="max-w-[1600px] mx-auto space-y-6">
             
             {/* Top Stat Cards - 5 columns */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <StatCard 
                 title="Total Appointments" 
-                value="1,248" 
+                value={stats?.totalAppointments?.toString() || "0"} 
                 icon={Calendar} 
                 iconBgColor="bg-blue-600" 
                 iconColor="text-white" 
@@ -48,7 +96,7 @@ export default function AdminDashboardPage() {
               />
               <StatCard 
                 title="Total Patients" 
-                value="3,652" 
+                value={stats?.totalPatients?.toString() || "0"} 
                 icon={Users} 
                 iconBgColor="bg-green-100" 
                 iconColor="text-green-600" 
@@ -57,7 +105,7 @@ export default function AdminDashboardPage() {
               />
               <StatCard 
                 title="Total Doctors" 
-                value="120" 
+                value={stats?.totalDoctors?.toString() || "0"} 
                 icon={User} 
                 iconBgColor="bg-purple-100" 
                 iconColor="text-purple-600" 
@@ -66,7 +114,7 @@ export default function AdminDashboardPage() {
               />
               <StatCard 
                 title="Total Beds" 
-                value="356" 
+                value={stats?.totalBeds?.toString() || "0"} 
                 icon={Bed} 
                 iconBgColor="bg-orange-100" 
                 iconColor="text-orange-500" 
@@ -75,7 +123,7 @@ export default function AdminDashboardPage() {
               />
               <StatCard 
                 title="Total Revenue" 
-                value="PKR 2,45,680" 
+                value={`PKR ${stats?.totalRevenue?.toLocaleString() || "0"}`} 
                 icon={DollarSign} 
                 iconBgColor="bg-red-50" 
                 iconColor="text-red-500" 
@@ -100,13 +148,13 @@ export default function AdminDashboardPage() {
             {/* Bottom Row - Tables and Revenue */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-6">
-                <RecentAppointmentsTable />
+                <RecentAppointmentsTable appointments={recentAppointments} />
               </div>
               <div className="lg:col-span-3">
                 <RevenueOverview />
               </div>
               <div className="lg:col-span-3">
-                <DepartmentWiseAppointments />
+                <DepartmentWiseAppointments departments={departments} />
               </div>
             </div>
 
@@ -124,26 +172,6 @@ export default function AdminDashboardPage() {
             </div>
 
           </div>
-        </main>
-      </div>
-
-      {/* Global styles for custom scrollbar to match clean design */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #cbd5e1;
-          border-radius: 20px;
-        }
-        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-          background-color: #94a3b8;
-        }
-      `}} />
-    </div>
+    </main>
   );
 }

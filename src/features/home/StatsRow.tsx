@@ -12,9 +12,9 @@ export default function StatsRow() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 -mt-8 relative z-20 mb-16">
-      <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex flex-wrap lg:flex-nowrap justify-between p-6 lg:px-10 lg:py-8 gap-4 border border-gray-50 divide-x divide-gray-100 items-center">
+      <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap justify-between p-6 lg:px-10 lg:py-8 gap-6 border border-gray-50 lg:divide-x divide-gray-100 items-center">
         {stats.map((stat, idx) => (
-          <div key={idx} className={`flex items-center flex-1 min-w-[150px] ${idx > 0 ? 'pl-4 lg:pl-8' : ''}`}>
+          <div key={idx} className={`flex items-center justify-center w-full sm:w-auto flex-1 min-w-[150px] ${idx > 0 ? 'lg:pl-8' : ''}`}>
             {stat.imageSrc ? (
               <Image 
                 src={stat.imageSrc} 

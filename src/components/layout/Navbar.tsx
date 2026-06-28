@@ -5,8 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
+import { useState } from "react";
+
 export default function Navbar() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="flex justify-between items-center px-4 lg:px-8 py-5 bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
@@ -203,9 +206,57 @@ export default function Navbar() {
         </button>
       </div>
       
-      <button className="lg:hidden text-[#0a335c]">
+      <button 
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="lg:hidden text-[#0a335c]"
+      >
         <Menu className="w-7 h-7" />
       </button>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sliding Menu */}
+      <div className={`fixed top-0 right-0 h-full w-[280px] bg-white shadow-2xl z-50 transform transition-transform duration-300 lg:hidden flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex justify-between items-center p-5 border-b border-gray-100">
+          <span className="font-bold text-[#0a335c] text-lg">Menu</span>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto py-4 px-5 flex flex-col gap-4">
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/" ? "text-[#009e90]" : "text-gray-600"}`}>Home</Link>
+          <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/about" ? "text-[#009e90]" : "text-gray-600"}`}>About Us</Link>
+          <Link href="/departments" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/departments" ? "text-[#009e90]" : "text-gray-600"}`}>Departments</Link>
+          <Link href="/doctors" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/doctors" ? "text-[#009e90]" : "text-gray-600"}`}>Doctors</Link>
+          <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/services" ? "text-[#009e90]" : "text-gray-600"}`}>Services</Link>
+          <Link href="/patients" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/patients" ? "text-[#009e90]" : "text-gray-600"}`}>Patients</Link>
+          <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className={`text-base font-medium ${pathname === "/contact" ? "text-[#009e90]" : "text-gray-600"}`}>Contact Us</Link>
+        </div>
+
+        <div className="p-5 border-t border-gray-100">
+          <button 
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              window.dispatchEvent(new Event('open-appointment-modal'));
+            }}
+            className="w-full bg-[#0a335c] text-white py-3 rounded-lg font-semibold text-center"
+          >
+            Book Appointment
+          </button>
+        </div>
+      </div>
     </nav>
   );
 }

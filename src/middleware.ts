@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Define the paths that don't require authentication
-const publicPaths = ['/login', '/register', '/'];
 
 // Define paths that require authentication
 const protectedPaths = ['/admin', '/patient', '/doctor', '/staff'];
