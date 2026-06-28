@@ -1,13 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
 import { 
-  Calendar, Filter, Search, Plus, MoreVertical, Edit2, Trash2, CheckCircle, XCircle,
-  ArrowUp, ArrowDown, Eye, Clock, Heart, Brain, Bone, Activity, Stethoscope, ChevronDown
+  Calendar, Filter, Search, Plus, Edit2, Trash2, CheckCircle, XCircle,
+  ArrowUp, ArrowDown, Eye, Clock, Heart, Brain, Bone, Activity, ChevronDown
 } from 'lucide-react';
+import NewAppointmentForm from './NewAppointmentForm';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const generateFakeAppointments = (count: number) => {
   const depts = [
     { name: 'Cardiology', icon: Heart, color: 'text-red-500', bg: 'bg-red-50' },
@@ -29,7 +30,7 @@ const generateFakeAppointments = (count: number) => {
   const dates = ['May 20, 2024', 'May 21, 2024', 'May 22, 2024', 'May 23, 2024', 'May 24, 2024', 'May 25, 2024', 'May 26, 2024', 'May 27, 2024'];
   const times = ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '02:00 PM', '02:30 PM', '03:00 PM', '04:00 PM'];
 
-  const records = [];
+  const records: Appointment[] = [];
   for (let i = 1; i <= count; i++) {
     const doc = doctors[Math.floor(Math.random() * doctors.length)];
     const dept = depts[Math.floor(Math.random() * depts.length)];
@@ -57,22 +58,57 @@ const generateFakeAppointments = (count: number) => {
   return records.reverse();
 };
 
-const initialAppointments = generateFakeAppointments(100);
+export interface Appointment {
+  _id?: string;
+  id?: string;
+  patient?: string;
+  patientName?: string;
+  phone: string;
+  pAvatar: string;
+  doctor?: string;
+  doctorName?: string;
+  docQual: string;
+  dAvatar: string;
+  dept: string;
+  deptIcon?: string | React.ElementType;
+  deptColor?: string;
+  deptBg?: string;
+  date: string;
+  time: string;
+  status: string;
+  payment: string;
+}
 
 export default function AppointmentsPage() {
-  const [appointments, setAppointments] = useState<any[]>(initialAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [activeTab, setActiveTab] = useState('All Appointments');
   const [selectedDept, setSelectedDept] = useState('All');
   const [selectedDoctor, setSelectedDoctor] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [, setLoading] = useState(true);
   const itemsPerPage = 8;
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingAppointment, setEditingAppointment] = useState<any>(null);
+  const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [viewingAppointment, setViewingAppointment] = useState<any>(null);
+  const [viewingAppointment, setViewingAppointment] = useState<Appointment | null>(null);
+
+  React.useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const res = await fetch('/api/admin/appointments');
+        const json = await res.json();
+        if (json.success) setAppointments(json.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAppointments();
+  }, []);
 
   const filteredAppointments = appointments.filter(app => {
     // Tab filter
@@ -92,75 +128,48 @@ export default function AppointmentsPage() {
     // Search filter
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
-      const matchPatient = app.patient.toLowerCase().includes(query);
-      const matchId = app.id.toLowerCase().includes(query);
-      const matchDoctor = app.doctor.toLowerCase().includes(query);
+      const appId = app._id || app.id;
+      const matchPatient = (app.patient || app.patientName || '').toLowerCase().includes(query);
+      const matchId = appId?.toLowerCase().includes(query);
+      const matchDoctor = (app.doctor || app.doctorName || '').toLowerCase().includes(query);
       if (!matchPatient && !matchId && !matchDoctor) return false;
     }
 
     return true;
   });
 
-  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredAppointments.length / itemsPerPage));
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleDelete = () => {
     if (deletingId) {
-      setAppointments(appointments.filter(a => a.id !== deletingId));
+      setAppointments(appointments.filter((a) => a._id !== deletingId && a.id !== deletingId));
       setDeletingId(null);
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const doctorName = formData.get('doctor') as string;
-    
-    // Pick avatar logic based on existing structure
-    let dAvatar = 'https://i.pravatar.cc/150?u=11';
-    let docQual = 'MBBS';
-    if (doctorName === 'Dr. Usman Ali') dAvatar = 'https://i.pravatar.cc/150?u=12';
-    if (doctorName === 'Dr. Maria Ahmed') dAvatar = 'https://i.pravatar.cc/150?u=13';
-    
-    let deptName = formData.get('dept') as string;
-    let deptIcon = Heart;
-    let deptColor = 'text-red-500';
-    let deptBg = 'bg-red-50';
-    if (deptName === 'Neurology') { deptIcon = Brain; deptColor = 'text-purple-500'; deptBg = 'bg-purple-50'; }
-    if (deptName === 'Orthopedics') { deptIcon = Bone; deptColor = 'text-blue-500'; deptBg = 'bg-blue-50'; }
-    if (deptName === 'Dermatology') { deptIcon = Activity; deptColor = 'text-teal-500'; deptBg = 'bg-teal-50'; }
-
-    const updatedData = {
-      patient: formData.get('patient') as string,
-      phone: formData.get('phone') as string,
-      doctor: doctorName,
-      docQual, dAvatar,
-      dept: deptName, deptIcon, deptColor, deptBg,
-      date: formData.get('date') as string,
-      time: formData.get('time') as string,
-      status: formData.get('status') as string,
-      payment: formData.get('payment') as string,
-    };
-
-    if (editingAppointment) {
-      setAppointments(appointments.map(a => a.id === editingAppointment.id ? { ...a, ...updatedData } : a));
-      setEditingAppointment(null);
-    } else {
-      const newId = `#APT-${Math.floor(10000 + Math.random() * 90000)}`;
-      setAppointments([{ id: newId, pAvatar: 'https://i.pravatar.cc/150?u=99', ...updatedData }, ...appointments]);
-      setIsAddModalOpen(false);
-    }
-  };
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] font-sans overflow-hidden">
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col pl-[260px]">
-        <Header />
-
-        <main className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <div className="w-full space-y-6">
+    <main className={`flex-1 overflow-y-auto custom-scrollbar w-full ${(isAddModalOpen || editingAppointment) ? 'p-0' : 'p-4 sm:p-6'}`}>
+      {(isAddModalOpen || editingAppointment) ? (
+        <NewAppointmentForm
+          initialData={editingAppointment}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditingAppointment(null);
+          }}
+          onCreated={(data) => {
+            if (editingAppointment) {
+              setAppointments(appointments.map(a => (a._id || a.id) === (editingAppointment._id || editingAppointment.id) ? { ...a, ...data } as Appointment : a));
+            } else {
+              setAppointments([data as unknown as Appointment, ...appointments]);
+            }
+            setIsAddModalOpen(false);
+            setEditingAppointment(null);
+          }}
+        />
+      ) : (
+        <div className="w-full space-y-6">
             
             {/* Top Bar: Date Picker & Button */}
             <div className="flex justify-end items-center gap-4">
@@ -343,31 +352,37 @@ export default function AppointmentsPage() {
                   </thead>
                   <tbody className="space-y-2">
                     {paginatedAppointments.length > 0 ? (
-                      paginatedAppointments.map((item, index) => (
-                        <tr key={item.id} className="border-b border-gray-50/50 hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{item.id}</td>
+                      paginatedAppointments.map((item) => {
+                        const itemId = item._id || item.id;
+                        const deptIconValue = item.deptIcon;
+                        const DeptIcon = typeof deptIconValue === 'string' 
+                          ? (deptIconValue === 'Heart' ? Heart : deptIconValue === 'Brain' ? Brain : deptIconValue === 'Bone' ? Bone : deptIconValue === 'Activity' ? Activity : Heart) 
+                          : (deptIconValue || Heart);
+                        return (
+                        <tr key={itemId} className="border-b border-gray-50/50 hover:bg-gray-50/50 transition-colors">
+                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.slice(-6) || 'NEW'}</td>
                           <td className="px-4 py-4">
                             <div className="flex items-center">
-                              <img src={item.pAvatar} alt={item.patient} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />
+                              <img src={item.pAvatar || 'https://i.pravatar.cc/150'} alt={item.patient || item.patientName || ''} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />
                               <div>
-                                <div className="font-bold text-gray-800 text-[13px]">{item.patient}</div>
+                                <div className="font-bold text-gray-800 text-[13px]">{item.patient || item.patientName}</div>
                                 <div className="text-[11px] text-gray-500">{item.phone}</div>
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-4">
                             <div className="flex items-center">
-                              <img src={item.dAvatar} alt={item.doctor} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />
+                              <img src={item.dAvatar || 'https://i.pravatar.cc/150'} alt={item.doctor || item.doctorName || ''} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />
                               <div>
-                                <div className="font-bold text-gray-800 text-[13px]">{item.doctor}</div>
+                                <div className="font-bold text-gray-800 text-[13px]">{item.doctor || item.doctorName}</div>
                                 <div className="text-[11px] text-gray-500">{item.docQual}</div>
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-4">
                             <div className="flex items-center">
-                              <div className={`w-7 h-7 rounded-full ${item.deptBg} flex items-center justify-center mr-2`}>
-                                <item.deptIcon className={`w-3.5 h-3.5 ${item.deptColor}`} />
+                              <div className={`w-7 h-7 rounded-full ${item.deptBg || 'bg-gray-50'} flex items-center justify-center mr-2`}>
+                                <DeptIcon className={`w-3.5 h-3.5 ${item.deptColor || 'text-gray-500'}`} />
                               </div>
                               <span className="font-medium text-gray-600 text-[13px]">{item.dept}</span>
                             </div>
@@ -415,7 +430,7 @@ export default function AppointmentsPage() {
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button 
-                                onClick={() => setDeletingId(item.id)}
+                                onClick={() => setDeletingId(itemId || null)}
                                 className="p-1.5 text-red-500 hover:bg-red-50 border border-red-50 rounded-md transition-colors" title="Delete"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -423,7 +438,7 @@ export default function AppointmentsPage() {
                             </div>
                           </td>
                         </tr>
-                      ))
+                      )})
                     ) : (
                       <tr>
                         <td colSpan={8} className="px-4 py-12 text-center text-gray-500 font-medium">
@@ -491,8 +506,7 @@ export default function AppointmentsPage() {
             </div>
 
           </div>
-        </main>
-      </div>
+      )}
 
       {/* Modals */}
       {/* Delete Confirmation Modal */}
@@ -527,7 +541,7 @@ export default function AppointmentsPage() {
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 Appointment Details
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">{viewingAppointment.id}</span>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">{viewingAppointment._id?.slice(-6) || viewingAppointment.id?.slice(-6)}</span>
               </h3>
               <button 
                 onClick={() => setViewingAppointment(null)}
@@ -545,9 +559,9 @@ export default function AppointmentsPage() {
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Patient</p>
                   <div className="flex items-center gap-3">
-                    <img src={viewingAppointment.pAvatar} alt="Patient" className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                    <img src={viewingAppointment.pAvatar || 'https://i.pravatar.cc/150'} alt="Patient" className="w-10 h-10 rounded-full object-cover shadow-sm" />
                     <div>
-                      <p className="font-bold text-sm text-gray-900">{viewingAppointment.patient}</p>
+                      <p className="font-bold text-sm text-gray-900">{viewingAppointment.patient || viewingAppointment.patientName}</p>
                       <p className="text-xs text-gray-500">{viewingAppointment.phone}</p>
                     </div>
                   </div>
@@ -556,9 +570,9 @@ export default function AppointmentsPage() {
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Doctor</p>
                   <div className="flex items-center gap-3">
-                    <img src={viewingAppointment.dAvatar} alt="Doctor" className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                    <img src={viewingAppointment.dAvatar || 'https://i.pravatar.cc/150'} alt="Doctor" className="w-10 h-10 rounded-full object-cover shadow-sm" />
                     <div>
-                      <p className="font-bold text-sm text-gray-900">{viewingAppointment.doctor}</p>
+                      <p className="font-bold text-sm text-gray-900">{viewingAppointment.doctor || viewingAppointment.doctorName}</p>
                       <p className="text-xs text-gray-500">{viewingAppointment.dept}</p>
                     </div>
                   </div>
@@ -577,8 +591,8 @@ export default function AppointmentsPage() {
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Department</p>
                   <div className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full ${viewingAppointment.deptBg} flex items-center justify-center`}>
-                      <viewingAppointment.deptIcon className={`w-3 h-3 ${viewingAppointment.deptColor}`} />
+                    <div className={`w-6 h-6 rounded-full ${viewingAppointment.deptBg || 'bg-gray-50'} flex items-center justify-center`}>
+                      <Heart className={`w-3 h-3 ${viewingAppointment.deptColor || 'text-gray-500'}`} />
                     </div>
                     <p className="text-sm font-semibold text-gray-800">{viewingAppointment.dept}</p>
                   </div>
@@ -620,102 +634,7 @@ export default function AppointmentsPage() {
         </div>
       )}
 
-      {/* Add / Edit Modal */}
-      {(isAddModalOpen || editingAppointment) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900">
-                {editingAppointment ? 'Edit Appointment' : 'New Appointment'}
-              </h3>
-              <button 
-                onClick={() => {
-                  setIsAddModalOpen(false);
-                  setEditingAppointment(null);
-                }}
-                className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Patient Name</label>
-                  <input required name="patient" defaultValue={editingAppointment?.patient || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm" placeholder="e.g. Ali Raza" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Phone</label>
-                  <input required name="phone" defaultValue={editingAppointment?.phone || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm" placeholder="e.g. +92 300 1234567" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Department</label>
-                  <select required name="dept" defaultValue={editingAppointment?.dept || 'Cardiology'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm">
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Orthopedics">Orthopedics</option>
-                    <option value="Dermatology">Dermatology</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Doctor</label>
-                  <select required name="doctor" defaultValue={editingAppointment?.doctor || 'Dr. Sarah Khan'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm">
-                    <option value="Dr. Sarah Khan">Dr. Sarah Khan</option>
-                    <option value="Dr. Usman Ali">Dr. Usman Ali</option>
-                    <option value="Dr. Maria Ahmed">Dr. Maria Ahmed</option>
-                    <option value="Dr. Hamza Qureshi">Dr. Hamza Qureshi</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Date</label>
-                  <input required type="text" name="date" defaultValue={editingAppointment?.date || 'May 28, 2024'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm" placeholder="e.g. May 26, 2024" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Time</label>
-                  <input required type="text" name="time" defaultValue={editingAppointment?.time || '10:00 AM'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm" placeholder="e.g. 10:00 AM" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Status</label>
-                  <select required name="status" defaultValue={editingAppointment?.status || 'Pending'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm">
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Payment</label>
-                  <select required name="payment" defaultValue={editingAppointment?.payment || 'Unpaid'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#5e35b1] focus:border-[#5e35b1] outline-none text-sm">
-                    <option value="Paid">Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                    <option value="Refunded">Refunded</option>
-                  </select>
-                </div>
-              </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 mt-6">
-                <button 
-                  type="button"
-                  onClick={() => {
-                    setIsAddModalOpen(false);
-                    setEditingAppointment(null);
-                  }}
-                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-[#5e35b1] hover:bg-[#512da8] rounded-xl transition-colors shadow-md"
-                >
-                  {editingAppointment ? 'Save Changes' : 'Create Appointment'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar {
@@ -733,6 +652,6 @@ export default function AppointmentsPage() {
           background-color: #94a3b8;
         }
       `}} />
-    </div>
+    </main>
   );
 }
