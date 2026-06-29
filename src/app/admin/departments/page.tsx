@@ -5,6 +5,7 @@ import {
   Building, Plus, Edit2, Trash2,
   CheckCircle, Heart, Brain, Bone, Eye, Activity, Menu, ChevronRight, Search, Calendar, Bell, Mail, ChevronDown, Download, Filter, User
 } from 'lucide-react';
+import NewDepartmentForm from './NewDepartmentForm';
 
 const mockDepartments = [
   { 
@@ -151,6 +152,11 @@ const mockDepartments = [
 
 export default function DepartmentsPage() {
   const [departments] = useState(mockDepartments);
+  const [isCreating, setIsCreating] = useState(false);
+
+  if (isCreating) {
+    return <NewDepartmentForm onClose={() => setIsCreating(false)} />;
+  }
 
   return (
     <div className="bg-[#f8fafc] min-h-screen flex flex-col absolute top-0 right-0 bottom-0 left-0 lg:left-[260px] z-40 animate-in fade-in duration-200 overflow-y-auto">
@@ -316,7 +322,7 @@ export default function DepartmentsPage() {
               <button className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
                 <Download className="w-3.5 h-3.5" /> Export
               </button>
-              <button className="px-3 py-1 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[12px] font-bold flex items-center gap-2 shadow-sm">
+              <button onClick={() => setIsCreating(true)} className="px-3 py-1 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[12px] font-bold flex items-center gap-2 shadow-sm">
                 <Plus className="w-3.5 h-3.5" /> New Department
               </button>
             </div>
