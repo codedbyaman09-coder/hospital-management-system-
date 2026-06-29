@@ -2,218 +2,385 @@
 
 import React, { useState } from 'react';
 import { 
-  Building, Plus, Edit2, Trash2, XCircle,
-  Activity, CheckCircle, Heart, Brain, Bone, Stethoscope, Droplet, Users
+  Building, Plus, Edit2, Trash2,
+  CheckCircle, Heart, Brain, Bone, Eye, Activity, Menu, ChevronRight, Search, Calendar, Bell, Mail, ChevronDown, Download, Filter, User
 } from 'lucide-react';
 
-// Fake department data kept for reference but not used (data comes from API)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _generateFakeDepartments = (count: number) => {
-  return [
-    { id: '#DEP-001', name: 'Cardiology', head: 'Dr. Sarah Khan', iconName: 'Heart', color: 'text-red-500', bg: 'bg-red-50', staff: 24, activePatients: 145, status: 'Active' },
-    { id: '#DEP-002', name: 'Neurology', head: 'Dr. Usman Ali', iconName: 'Brain', color: 'text-purple-500', bg: 'bg-purple-50', staff: 18, activePatients: 98, status: 'Active' },
-    { id: '#DEP-003', name: 'Orthopedics', head: 'Dr. Maria Ahmed', iconName: 'Bone', color: 'text-blue-500', bg: 'bg-blue-50', staff: 20, activePatients: 112, status: 'Active' },
-    { id: '#DEP-004', name: 'Dermatology', head: 'Dr. Hamza Qureshi', iconName: 'Activity', color: 'text-teal-500', bg: 'bg-teal-50', staff: 12, activePatients: 65, status: 'Active' },
-    { id: '#DEP-005', name: 'Pediatrics', head: 'Dr. Ayesha Malik', iconName: 'Stethoscope', color: 'text-pink-500', bg: 'bg-pink-50', staff: 30, activePatients: 210, status: 'Active' },
-    { id: '#DEP-006', name: 'Blood Bank', head: 'Dr. Bilal Raza', iconName: 'Droplet', color: 'text-red-600', bg: 'bg-red-100', staff: 8, activePatients: 0, status: 'Inactive' },
-  ];
-};
-
-const iconMap: Record<string, React.ElementType> = {
-  Heart, Brain, Bone, Activity, Stethoscope, Droplet, Building
-};
-
-export interface Department {
-  _id?: string;
-  id?: string;
-  name: string;
-  head: string;
-  iconName: string;
-  color: string;
-  bg: string;
-  staff: number;
-  activePatients: number;
-  status: string;
-}
+const mockDepartments = [
+  { 
+    id: 1, 
+    name: 'Cardiology', 
+    icon: Heart, 
+    iconColor: 'text-blue-500', 
+    iconBg: 'bg-blue-50',
+    head: 'Dr. Sarah Khan',
+    headAvatar: 'https://i.pravatar.cc/150?u=sarah',
+    qualification: 'MBBS, MD (Cardiology)',
+    description: 'Diagnosis and treatment of heart related diseases.',
+    doctors: 8,
+    staff: 18,
+    status: 'Active'
+  },
+  { 
+    id: 2, 
+    name: 'Neurology', 
+    icon: Brain, 
+    iconColor: 'text-indigo-500', 
+    iconBg: 'bg-indigo-50',
+    head: 'Dr. Usman Ali',
+    headAvatar: 'https://i.pravatar.cc/150?u=usman',
+    qualification: 'MBBS, MD (Neurology)',
+    description: 'Treatment of disorders of the nervous system.',
+    doctors: 7,
+    staff: 16,
+    status: 'Active'
+  },
+  { 
+    id: 3, 
+    name: 'Orthopedics', 
+    icon: Bone, 
+    iconColor: 'text-purple-500', 
+    iconBg: 'bg-purple-50',
+    head: 'Dr. Hamza Qureshi',
+    headAvatar: 'https://i.pravatar.cc/150?u=hamza',
+    qualification: 'MBBS, MS (Orthopedics)',
+    description: 'Treatment of bone, joint and muscle conditions.',
+    doctors: 6,
+    staff: 14,
+    status: 'Active'
+  },
+  { 
+    id: 4, 
+    name: 'Pediatrics', 
+    icon: Activity, 
+    iconColor: 'text-pink-500', 
+    iconBg: 'bg-pink-50',
+    head: 'Dr. Maria Ahmed',
+    headAvatar: 'https://i.pravatar.cc/150?u=maria',
+    qualification: 'MBBS, MD (Pediatrics)',
+    description: 'Healthcare for infants, children and adolescents.',
+    doctors: 5,
+    staff: 12,
+    status: 'Active'
+  },
+  { 
+    id: 5, 
+    name: 'Gynecology', 
+    icon: Heart, 
+    iconColor: 'text-rose-500', 
+    iconBg: 'bg-rose-50',
+    head: 'Dr. Ayesha Malik',
+    headAvatar: 'https://i.pravatar.cc/150?u=ayesha',
+    qualification: 'MBBS, DGO (Gynecology)',
+    description: "Women's reproductive health and pregnancies.",
+    doctors: 6,
+    staff: 13,
+    status: 'Active'
+  },
+  { 
+    id: 6, 
+    name: 'Dermatology', 
+    icon: Activity, 
+    iconColor: 'text-orange-500', 
+    iconBg: 'bg-orange-50',
+    head: 'Dr. Sana Javed',
+    headAvatar: 'https://i.pravatar.cc/150?u=sana',
+    qualification: 'MBBS, MD (Dermatology)',
+    description: 'Diagnosis and treatment of skin, hair and nail disorders.',
+    doctors: 4,
+    staff: 9,
+    status: 'Active'
+  },
+  { 
+    id: 7, 
+    name: 'Dental Care', 
+    icon: Activity, 
+    iconColor: 'text-teal-500', 
+    iconBg: 'bg-teal-50',
+    head: 'Dr. Bilal Ahmed',
+    headAvatar: 'https://i.pravatar.cc/150?u=bilal',
+    qualification: 'BDS, MDS (Dental)',
+    description: 'Oral health care and dental treatments.',
+    doctors: 5,
+    staff: 10,
+    status: 'Active'
+  },
+  { 
+    id: 8, 
+    name: 'Urology', 
+    icon: Activity, 
+    iconColor: 'text-purple-600', 
+    iconBg: 'bg-purple-100',
+    head: 'Dr. Imran Shafiq',
+    headAvatar: 'https://i.pravatar.cc/150?u=imran',
+    qualification: 'MBBS, MS (Urology)',
+    description: 'Treatment of urinary tract and male reproductive organs.',
+    doctors: 3,
+    staff: 7,
+    status: 'Active'
+  },
+  { 
+    id: 9, 
+    name: 'ENT', 
+    icon: Activity, 
+    iconColor: 'text-red-500', 
+    iconBg: 'bg-red-50',
+    head: 'Dr. Hina Fatima',
+    headAvatar: 'https://i.pravatar.cc/150?u=hina',
+    qualification: 'MBBS, MS (ENT)',
+    description: 'Treatment of ear, nose, throat and related disorders.',
+    doctors: 4,
+    staff: 8,
+    status: 'Active'
+  },
+  { 
+    id: 10, 
+    name: 'Ophthalmology', 
+    icon: Eye, 
+    iconColor: 'text-blue-600', 
+    iconBg: 'bg-blue-100',
+    head: 'Dr. Ahmed Raza',
+    headAvatar: 'https://i.pravatar.cc/150?u=ahmed',
+    qualification: 'MBBS, MS (Ophthalmology)',
+    description: 'Eye care and treatment of vision related problems.',
+    doctors: 4,
+    staff: 7,
+    status: 'Active'
+  },
+];
 
 export default function DepartmentsPage() {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [activeTab, setActiveTab] = useState('All Departments');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [, setLoading] = useState(true);
-  
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingDept, setEditingDept] = useState<Department | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    const fetchDepts = async () => {
-      try {
-        const res = await fetch('/api/admin/departments');
-        const json = await res.json();
-        if (json.success) setDepartments(json.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDepts();
-  }, []);
-
-  const filteredDepts = departments.filter(dept => {
-    if (activeTab !== 'All Departments') {
-      if (activeTab === 'Active' && dept.status !== 'Active') return false;
-      if (activeTab === 'Inactive' && dept.status !== 'Inactive') return false;
-    }
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase();
-      if (!dept.name.toLowerCase().includes(query) && !dept.head.toLowerCase().includes(query)) return false;
-    }
-    return true;
-  });
-
-  const handleDelete = () => {
-    if (deletingId) {
-      // Typically you would call a DELETE API here. For now we update local state.
-      setDepartments(departments.filter((d) => d._id !== deletingId && d.id !== deletingId));
-      setDeletingId(null);
-    }
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    
-    const updatedData = {
-      name: formData.get('name') as string,
-      head: formData.get('head') as string,
-      staff: parseInt(formData.get('staff') as string),
-      activePatients: parseInt(formData.get('activePatients') as string),
-      status: formData.get('status') as string,
-    };
-
-    if (editingDept) {
-      // Typically you would call a PUT API here.
-      const editId = editingDept._id || editingDept.id;
-      setDepartments(departments.map((d) => (d._id || d.id) === editId ? { ...d, ...updatedData } : d));
-      setEditingDept(null);
-    } else {
-      try {
-        const res = await fetch('/api/admin/departments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedData)
-        });
-        const json = await res.json();
-        if (json.success) {
-          setDepartments([json.data, ...departments]);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-      setIsAddModalOpen(false);
-    }
-  };
+  const [departments] = useState(mockDepartments);
 
   return (
-    <main className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar w-full">
-      <div className="w-full space-y-6">
-        <div className="flex justify-end items-center gap-4">
-          <button onClick={() => setIsAddModalOpen(true)} className="flex items-center px-4 py-2 bg-[#5e35b1] text-white rounded-lg hover:bg-[#512da8] transition-colors text-sm font-medium shadow-md">
-            <Plus className="w-4 h-4 mr-2" /> New Department
+    <div className="bg-[#f8fafc] min-h-screen flex flex-col absolute top-0 right-0 bottom-0 left-0 lg:left-[260px] z-40 animate-in fade-in duration-200 overflow-y-auto">
+      
+      {/* Custom Top Header */}
+      <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 w-full sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          <button className="text-gray-500 hover:text-gray-700 lg:hidden">
+            <Menu className="w-6 h-6" />
           </button>
+          <div>
+            <h1 className="text-[18px] font-bold text-gray-900 leading-tight">Departments</h1>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-500 mt-0.5">
+              <span className="text-blue-600 font-medium cursor-pointer hover:underline">Dashboard</span>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-gray-600">Departments</span>
+            </div>
+          </div>
         </div>
 
+        <div className="flex items-center space-x-5">
+          {/* Search Bar */}
+          <div className="hidden md:flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-[240px]">
+            <input type="text" placeholder="Search department..." className="w-full outline-none text-gray-600 placeholder-gray-400 text-xs" />
+            <Search className="w-3.5 h-3.5 text-gray-400 ml-2 shrink-0" />
+          </div>
+
+          {/* Date Picker */}
+          <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-700 font-medium cursor-pointer hover:bg-gray-50 transition-colors gap-2">
+            <Calendar className="w-3.5 h-3.5 text-gray-500" />
+            <span>May 20, 2024</span>
+            <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+          </div>
+
+          {/* Action Icons */}
+          <div className="flex items-center space-x-3 pl-2">
+            <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
+              <Bell className="w-4 h-4" />
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border border-white rounded-full text-[8px] font-bold text-white flex items-center justify-center">
+                12
+              </span>
+            </button>
+            <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
+              <Mail className="w-4 h-4" />
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border border-white rounded-full text-[8px] font-bold text-white flex items-center justify-center">
+                8
+              </span>
+            </button>
+          </div>
+
+          {/* Admin Profile */}
+          <div className="flex items-center gap-2 border-l border-gray-200 pl-5 cursor-pointer">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+              alt="Admin" 
+              className="w-7 h-7 rounded-full object-cover"
+            />
+            <div className="hidden sm:flex items-center">
+              <span className="text-[13px] font-bold text-gray-800">Admin</span>
+              <ChevronDown className="w-3 h-3 ml-1 text-gray-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="p-6 max-w-[1250px] mx-auto w-full space-y-6">
+        
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-              <Building className="w-6 h-6 text-blue-500" />
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-[#4f46e5] text-white flex items-center justify-center shrink-0">
+              <Building className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Total Departments</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{departments.length}</p>
+              <p className="text-[12px] text-gray-500 font-bold mb-1">Total Departments</p>
+              <p className="text-2xl font-black text-gray-900 leading-none">15</p>
+              <p className="text-[11px] text-gray-500 mt-1.5">All departments</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-500" />
+          
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-[#dcfce7] text-[#16a34a] flex items-center justify-center shrink-0">
+              <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Active</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{departments.filter(d=>d.status==='Active').length}</p>
+              <p className="text-[12px] text-gray-500 font-bold mb-1">Active Departments</p>
+              <p className="text-2xl font-black text-gray-900 leading-none">13</p>
+              <p className="text-[11px] text-gray-500 mt-1.5">86.7% of total</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
-              <Users className="w-6 h-6 text-indigo-500" />
+          
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-[#ffedd5] text-[#ea580c] flex items-center justify-center shrink-0">
+              <User className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Total Staff</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{departments.reduce((acc, curr) => acc + curr.staff, 0)}</p>
+              <p className="text-[12px] text-gray-500 font-bold mb-1">Total Staff</p>
+              <p className="text-2xl font-black text-gray-900 leading-none">156</p>
+              <p className="text-[11px] text-gray-500 mt-1.5">Working in departments</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center">
-              <Activity className="w-6 h-6 text-orange-500" />
+          
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-[#7e22ce] text-white flex items-center justify-center shrink-0">
+              <Activity className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Active Patients</p>
-              <p className="text-2xl font-bold text-gray-800 mt-1">{departments.reduce((acc, curr) => acc + curr.activePatients, 0)}</p>
+              <p className="text-[12px] text-gray-500 font-bold mb-1">Total Doctors</p>
+              <p className="text-2xl font-black text-gray-900 leading-none">78</p>
+              <p className="text-[11px] text-gray-500 mt-1.5">Assigned to departments</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] w-full overflow-hidden">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-4 py-3 border-b border-gray-100 gap-3 bg-white">
-            <div className="flex gap-3 md:gap-5 w-full lg:w-auto overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
-              {['All Departments', 'Active', 'Inactive'].map(tab => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`text-[12px] font-semibold transition-colors whitespace-nowrap ${activeTab === tab ? 'text-[#5e35b1]' : 'text-[#475569] hover:text-[#1e293b]'}`}>{tab}</button>
-              ))}
+        {/* Toolbar & Table Section */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full overflow-hidden flex flex-col">
+          
+          {/* Toolbar */}
+          <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 bg-white">
+            
+            <div className="flex items-center gap-4 w-full lg:w-auto">
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Search department..." 
+                  className="pl-3 pr-8 py-1 border border-gray-200 rounded-lg text-[11px] font-bold outline-none w-[150px] text-[#1e1b4b] placeholder-gray-500 focus:border-blue-500" 
+                />
+                <Search className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2.5 top-1/2 -translate-y-1/2" />
+              </div>
+              
+              <div className="flex flex-col relative w-[100px]">
+                <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Status</label>
+                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                  <option>All Status</option>
+                  <option>Active</option>
+                  <option>Inactive</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="flex flex-col relative w-[130px]">
+                <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Head of Department</label>
+                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                  <option>All Heads</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="flex flex-col relative w-[120px]">
+                <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Sort By</label>
+                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                  <option>Department Name</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
-            <div className="flex items-center gap-2 w-full lg:w-auto">
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search departments..." className="pl-3 pr-7 py-1.5 border border-gray-200 rounded-md text-[12px] font-medium outline-none w-48 bg-white" />
+
+            <div className="flex items-center gap-3 ml-auto">
+              <button className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5" /> Filters
+              </button>
+              <button className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
+                <Download className="w-3.5 h-3.5" /> Export
+              </button>
+              <button className="px-3 py-1 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[12px] font-bold flex items-center gap-2 shadow-sm">
+                <Plus className="w-3.5 h-3.5" /> New Department
+              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto p-4">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-gray-700 font-bold bg-gray-50 rounded-lg border-b-4 border-white">
-                <tr>
-                  <th className="px-4 py-3">ID</th>
-                  <th className="px-4 py-3">Department Name</th>
-                  <th className="px-4 py-3">Head of Department</th>
-                  <th className="px-4 py-3">Staff</th>
-                  <th className="px-4 py-3">Active Patients</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-center">Actions</th>
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-white border-b border-gray-100">
+                  <th className="px-4 py-2.5 w-12"><input type="checkbox" className="rounded border-gray-300" /></th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">#</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">Department Name</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">Head of Department</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase w-[220px]">Description</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase text-center">Total Doctors</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase text-center">Total Staff</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">Status</th>
+                  <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="space-y-2">
-                {filteredDepts.map((item) => {
-                  const Icon = iconMap[item.iconName] || Building;
-                  const itemId = item._id || item.id;
+              <tbody className="divide-y divide-gray-50">
+                {departments.map((dept, index) => {
+                  const Icon = dept.icon;
                   return (
-                    <tr key={itemId} className="border-b border-gray-50/50 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.slice(-6) || 'NEW'}</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full ${item.bg || 'bg-blue-50'} flex items-center justify-center mr-3`}><Icon className={`w-4 h-4 ${item.color || 'text-blue-500'}`} /></div>
-                          <span className="font-bold text-gray-800 text-[13px]">{item.name}</span>
+                    <tr key={dept.id} className="hover:bg-gray-50/50 transition-colors bg-white">
+                      <td className="px-4 py-2.5"><input type="checkbox" className="rounded border-gray-300" /></td>
+                      <td className="px-4 py-2.5 text-[13px] font-bold text-gray-900">{index + 1}</td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg ${dept.iconBg} flex items-center justify-center shrink-0`}>
+                            <Icon className={`w-4 h-4 ${dept.iconColor}`} />
+                          </div>
+                          <span className="font-bold text-[13px] text-gray-900">{dept.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-600 text-[13px]">{item.head}</td>
-                      <td className="px-4 py-4 font-medium text-gray-600 text-[13px]">{item.staff}</td>
-                      <td className="px-4 py-4 font-medium text-gray-600 text-[13px]">{item.activePatients}</td>
-                      <td className="px-4 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold ${
-                          item.status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-gray-100 text-gray-500'
-                        }`}>{item.status}</span>
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center gap-3">
+                          <img src={dept.headAvatar} alt={dept.head} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="font-bold text-[13px] text-blue-700">{dept.head}</span>
+                            <span className="text-[11px] font-semibold text-gray-500 mt-0.5">{dept.qualification}</span>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button onClick={() => setEditingDept(item)} className="p-1.5 text-blue-500 hover:bg-blue-50 border border-blue-50 rounded-md transition-colors"><Edit2 className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => setDeletingId(itemId || null)} className="p-1.5 text-red-500 hover:bg-red-50 border border-red-50 rounded-md transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <td className="px-4 py-2.5">
+                        <p className="text-[12px] font-semibold text-gray-700 leading-tight pr-4">{dept.description}</p>
+                      </td>
+                      <td className="px-4 py-2.5 text-[13px] font-bold text-gray-900 text-center">{dept.doctors}</td>
+                      <td className="px-4 py-2.5 text-[13px] font-bold text-gray-900 text-center">{dept.staff}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="text-[12px] font-bold text-[#16a34a]">{dept.status}</span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center justify-center gap-2">
+                          <button className="w-7 h-7 rounded border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors">
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button className="w-7 h-7 rounded border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors">
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button className="w-7 h-7 rounded border border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -222,57 +389,20 @@ export default function DepartmentsPage() {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination */}
+          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
+            <div className="text-[12px] font-bold text-gray-700">Showing 1 to 10 of 15 entries</div>
+            <div className="flex gap-1.5 items-center">
+              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">&lt;</button>
+              <button className="w-7 h-7 flex items-center justify-center border border-[#0052cc] rounded text-white bg-[#0052cc] text-xs font-bold">1</button>
+              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">2</button>
+              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">&gt;</button>
+            </div>
+          </div>
+
         </div>
       </div>
-
-      {deletingId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-            <h3 className="text-lg font-bold mb-2">Delete Department</h3>
-            <p className="text-sm text-gray-500 mb-6">Are you sure you want to delete this department? Cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeletingId(null)} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm">Cancel</button>
-              <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg text-sm">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {(isAddModalOpen || editingDept) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold">{editingDept ? 'Edit Department' : 'New Department'}</h3>
-              <button onClick={() => { setIsAddModalOpen(false); setEditingDept(null); }}><XCircle className="w-5 h-5 text-gray-400" /></button>
-            </div>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div><label className="text-sm font-medium">Department Name</label><input required name="name" defaultValue={editingDept?.name} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Head of Department</label><input required name="head" defaultValue={editingDept?.head} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-sm font-medium">Total Staff</label><input required type="number" name="staff" defaultValue={editingDept?.staff} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                  <div><label className="text-sm font-medium">Active Patients</label><input required type="number" name="activePatients" defaultValue={editingDept?.activePatients} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Status</label>
-                  <select name="status" defaultValue={editingDept?.status || 'Active'} className="w-full px-3 py-2 border rounded-lg text-sm outline-none">
-                    <option>Active</option><option>Inactive</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t mt-6">
-                <button type="button" onClick={() => { setIsAddModalOpen(false); setEditingDept(null); }} className="px-5 py-2.5 bg-gray-100 rounded-xl text-sm font-medium">Cancel</button>
-                <button type="submit" className="px-5 py-2.5 bg-[#5e35b1] text-white rounded-xl text-sm font-medium">Save</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
-      `}} />
-    </main>
+    </div>
   );
 }

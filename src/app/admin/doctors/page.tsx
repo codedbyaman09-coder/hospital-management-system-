@@ -2,9 +2,10 @@
 "use client";
 
 import React, { useState } from 'react';
+import NewDoctorForm from './NewDoctorForm';
 import { 
   Plus, Eye, Edit2, Trash2, XCircle,
-  ArrowUp, Stethoscope, Briefcase, Clock, CheckCircle
+  ArrowUp, Stethoscope, Briefcase, Clock, CheckCircle, Upload
 } from 'lucide-react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -69,6 +70,7 @@ export default function DoctorsPage() {
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewingDoctor, setViewingDoctor] = useState<Doctor | null>(null);
+  const [avatarBase64, setAvatarBase64] = useState<string>('');
 
   React.useEffect(() => {
     const fetchDoctors = async () => {
@@ -122,12 +124,14 @@ export default function DoctorsPage() {
       qual: formData.get('qual') as string,
       experience: parseInt(formData.get('experience') as string),
       status: formData.get('status') as string,
+      avatar: avatarBase64 || editingDoctor?.avatar || `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 1000)}`,
     };
 
     if (editingDoctor) {
       const editId = editingDoctor._id || editingDoctor.id;
       setDoctors(doctors.map((d) => (d._id || d.id) === editId ? { ...d, ...updatedData } : d));
       setEditingDoctor(null);
+      setAvatarBase64('');
     } else {
       try {
         const res = await fetch('/api/admin/doctors', {
@@ -143,6 +147,7 @@ export default function DoctorsPage() {
         console.error(err);
       }
       setIsAddModalOpen(false);
+      setAvatarBase64('');
     }
   };
 
@@ -150,7 +155,7 @@ export default function DoctorsPage() {
     <main className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar w-full">
       <div className="w-full space-y-6">
         <div className="flex justify-end items-center gap-4">
-          <button onClick={() => setIsAddModalOpen(true)} className="flex items-center px-4 py-2 bg-[#5e35b1] text-white rounded-lg hover:bg-[#512da8] transition-colors text-sm font-medium shadow-md">
+          <button onClick={() => { setIsAddModalOpen(true); setAvatarBase64(''); }} className="flex items-center px-4 py-2 bg-[#5e35b1] text-white rounded-lg hover:bg-[#512da8] transition-colors text-sm font-medium shadow-md">
             <Plus className="w-4 h-4 mr-2" /> New Doctor
           </button>
         </div>
@@ -254,7 +259,7 @@ export default function DoctorsPage() {
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-center gap-1.5">
                         <button onClick={() => setViewingDoctor(item)} className="p-1.5 text-[#5e35b1] hover:bg-[#f3e8ff] border border-[#f3e8ff] rounded-md transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => setEditingDoctor(item)} className="p-1.5 text-blue-500 hover:bg-blue-50 border border-blue-50 rounded-md transition-colors"><Edit2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { setEditingDoctor(item); setAvatarBase64(item.avatar || ''); }} className="p-1.5 text-blue-500 hover:bg-blue-50 border border-blue-50 rounded-md transition-colors"><Edit2 className="w-3.5 h-3.5" /></button>
                         <button onClick={() => setDeletingId(itemId || null)} className="p-1.5 text-red-500 hover:bg-red-50 border border-red-50 rounded-md transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
@@ -315,34 +320,23 @@ export default function DoctorsPage() {
       )}
 
       {(isAddModalOpen || editingDoctor) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold">{editingDoctor ? 'Edit Doctor' : 'New Doctor'}</h3>
-              <button onClick={() => { setIsAddModalOpen(false); setEditingDoctor(null); }}><XCircle className="w-5 h-5 text-gray-400" /></button>
-            </div>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="text-sm font-medium">Name</label><input required name="name" defaultValue={editingDoctor?.name} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Email</label><input required type="email" name="email" defaultValue={editingDoctor?.email} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Phone</label><input required name="phone" defaultValue={editingDoctor?.phone} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Department</label><input required name="dept" defaultValue={editingDoctor?.dept || 'Cardiology'} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Qualification</label><input required name="qual" defaultValue={editingDoctor?.qual} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div><label className="text-sm font-medium">Experience (Yrs)</label><input required type="number" name="experience" defaultValue={editingDoctor?.experience} className="w-full px-3 py-2 border rounded-lg text-sm outline-none" /></div>
-                <div>
-                  <label className="text-sm font-medium">Status</label>
-                  <select name="status" defaultValue={editingDoctor?.status || 'Active'} className="w-full px-3 py-2 border rounded-lg text-sm outline-none">
-                    <option>Active</option><option>On Leave</option><option>Left</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t mt-6">
-                <button type="button" onClick={() => { setIsAddModalOpen(false); setEditingDoctor(null); }} className="px-5 py-2.5 bg-gray-100 rounded-xl text-sm font-medium">Cancel</button>
-                <button type="submit" className="px-5 py-2.5 bg-[#5e35b1] text-white rounded-xl text-sm font-medium">Save</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <NewDoctorForm
+          initialData={editingDoctor}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditingDoctor(null);
+          }}
+          onCreated={(doctor) => {
+            if (editingDoctor) {
+              const editId = editingDoctor._id || editingDoctor.id;
+              setDoctors(doctors.map((d) => (d._id || d.id) === editId ? { ...d, ...doctor } : d));
+            } else {
+              setDoctors([doctor, ...doctors]);
+            }
+            setIsAddModalOpen(false);
+            setEditingDoctor(null);
+          }}
+        />
       )}
       
       <style dangerouslySetInnerHTML={{__html: `
