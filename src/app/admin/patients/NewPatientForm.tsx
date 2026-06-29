@@ -21,8 +21,24 @@ export default function NewPatientForm({ onClose, onCreated, initialData }: NewP
   const [email] = useState(initialData?.email || '');
   const [bloodGroup, setBloodGroup] = useState(initialData?.bloodGroup || 'A+');
   const [addressLine1, setAddressLine1] = useState('');
+  const [avatarBase64, setAvatarBase64] = useState(initialData?.avatar || '');
 
   const [submitting, setSubmitting] = useState(false);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size exceeds 5MB limit.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarBase64(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Calculate age from DOB (rough estimate for demo)
   const calculateAge = (dobString: string) => {
@@ -47,7 +63,7 @@ export default function NewPatientForm({ onClose, onCreated, initialData }: NewP
       name: `${firstName} ${lastName}`,
       email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
       phone: phone,
-      avatar: `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 1000)}`,
+      avatar: avatarBase64 || `https://i.pravatar.cc/150?u=${Math.floor(Math.random() * 1000)}`,
       gender: gender,
       age: initialData?.age || calculateAge(dob),
       bloodGroup: bloodGroup,
@@ -184,14 +200,19 @@ export default function NewPatientForm({ onClose, onCreated, initialData }: NewP
                   <div className="space-y-1.5 md:col-span-2">
                     <label className="text-xs font-semibold text-gray-700">Profile Photo</label>
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
-                        <User className="w-6 h-6" />
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 overflow-hidden">
+                        {avatarBase64 ? (
+                          <img src={avatarBase64} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-6 h-6" />
+                        )}
                       </div>
-                      <div className="flex-1 border border-dashed border-gray-300 rounded-xl p-2.5 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer transition-colors text-sm text-gray-500">
+                      <label className="flex-1 border border-dashed border-gray-300 rounded-xl p-2.5 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer transition-colors text-sm text-gray-500 relative">
                         <Upload className="w-4 h-4 text-blue-500" />
                         <span className="font-medium text-blue-600">Upload Photo</span>
-                        <span className="text-xs">JPG, PNG (Max. 2MB)</span>
-                      </div>
+                        <span className="text-xs">JPG, PNG (Max. 5MB)</span>
+                        <input type="file" accept="image/jpeg, image/png" className="hidden" onChange={handlePhotoUpload} />
+                      </label>
                     </div>
                   </div>
 
@@ -340,8 +361,12 @@ export default function NewPatientForm({ onClose, onCreated, initialData }: NewP
               <h3 className="font-bold text-gray-900 mb-6">Patient Summary</h3>
 
               <div className="flex flex-col items-center justify-center text-center mb-8">
-                <div className="w-20 h-20 bg-blue-50 text-blue-300 rounded-full flex items-center justify-center mb-4">
-                  <User className="w-10 h-10" />
+                <div className="w-20 h-20 bg-blue-50 text-blue-300 rounded-full flex items-center justify-center mb-4 overflow-hidden shadow-sm border-2 border-white">
+                  {avatarBase64 ? (
+                    <img src={avatarBase64} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10" />
+                  )}
                 </div>
                 {!firstName && !lastName ? (
                   <>
