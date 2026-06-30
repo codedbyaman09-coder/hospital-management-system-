@@ -11,9 +11,10 @@ import 'react-phone-input-2/lib/style.css';
 
 interface NewDepartmentFormProps {
   onClose: () => void;
+  onSave?: (department: any) => void;
 }
 
-export default function NewDepartmentForm({ onClose }: NewDepartmentFormProps) {
+export default function NewDepartmentForm({ onClose, onSave }: NewDepartmentFormProps) {
   // State for form fields to live-update the summary
   const [deptName, setDeptName] = useState('');
   const [deptCode, setDeptCode] = useState('');
@@ -27,6 +28,25 @@ export default function NewDepartmentForm({ onClose }: NewDepartmentFormProps) {
   const [description, setDescription] = useState('');
   const [services, setServices] = useState('');
   const [notes, setNotes] = useState('');
+
+  const handleSave = () => {
+    if (onSave) {
+      onSave({
+        id: Date.now(),
+        name: deptName || 'New Department',
+        icon: Building2,
+        iconColor: 'text-blue-500',
+        iconBg: 'bg-blue-50',
+        head: headOfDept || 'Unassigned',
+        headAvatar: `https://i.pravatar.cc/150?u=${Date.now()}`,
+        qualification: 'N/A',
+        description: description || 'No description provided.',
+        doctors: totalDoctors || 0,
+        staff: totalStaff || 0,
+        status: status || 'Active'
+      });
+    }
+  };
 
   return (
     <div className="flex-1 bg-[#f4f7fe] min-h-screen font-sans flex flex-col w-full">
@@ -299,7 +319,7 @@ export default function NewDepartmentForm({ onClose }: NewDepartmentFormProps) {
               <button onClick={onClose} className="px-6 py-2.5 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-[13px] font-bold bg-white shadow-sm">
                 Cancel
               </button>
-              <button className="px-6 py-2.5 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-bold flex items-center gap-2 shadow-sm">
+              <button onClick={handleSave} className="px-6 py-2.5 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-bold flex items-center gap-2 shadow-sm">
                 <Upload className="w-4 h-4" /> Save Department
               </button>
             </div>

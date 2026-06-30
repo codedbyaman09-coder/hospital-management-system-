@@ -360,7 +360,7 @@ export default function AppointmentsPage() {
                           : (deptIconValue || Heart);
                         return (
                         <tr key={itemId} className="border-b border-gray-50/50 hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.slice(-6) || 'NEW'}</td>
+                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.toString().slice(-6) || 'NEW'}</td>
                           <td className="px-4 py-4">
                             <div className="flex items-center">
                               <img src={item.pAvatar || 'https://i.pravatar.cc/150'} alt={item.patient || item.patientName || ''} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />
@@ -541,7 +541,7 @@ export default function AppointmentsPage() {
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 Appointment Details
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">{viewingAppointment._id?.slice(-6) || viewingAppointment.id?.slice(-6)}</span>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">{viewingAppointment._id?.toString().slice(-6) || viewingAppointment.id?.toString().slice(-6)}</span>
               </h3>
               <button 
                 onClick={() => setViewingAppointment(null)}

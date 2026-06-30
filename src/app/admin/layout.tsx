@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:pl-[260px] w-full transition-all duration-300">
+      <div className="flex-1 flex flex-col lg:pl-[260px] w-full transition-all duration-300 print:pl-0">
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         {children}
       </div>

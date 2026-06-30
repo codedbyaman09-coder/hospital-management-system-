@@ -1,19 +1,30 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Patient from '@/models/Patient';
-import Doctor from '@/models/Doctor';
-import Appointment from '@/models/Appointment';
-import Department from '@/models/Department';
+import { prisma, connectDB } from '@/lib/db';
 
 export async function POST() {
   try {
-    await connectToDatabase();
+    await connectDB();
 
     // Clear existing data for a fresh seed
-    await Patient.deleteMany({});
-    await Doctor.deleteMany({});
-    await Appointment.deleteMany({});
-    await Department.deleteMany({});
+    await prisma.patient.deleteMany({});
+    await prisma.doctor.deleteMany({});
+    await prisma.appointment.deleteMany({});
+    await prisma.department.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    // 0. Seed Admin User
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash('Password@123', 10);
+    await prisma.user.create({
+      data: {
+        fullName: 'Admin User',
+        email: 'admin@citycare.com',
+        password: hashedPassword,
+        role: 'Admin',
+        isVerified: true
+      }
+    });
 
     // 1. Seed Departments
     const depts = [
@@ -22,7 +33,7 @@ export async function POST() {
       { name: 'Orthopedics', head: 'Dr. Maria Ahmed', iconName: 'Bone', color: 'text-blue-500', bg: 'bg-blue-50', staff: 20, activePatients: 112, status: 'Active' },
       { name: 'Dermatology', head: 'Dr. Hamza Qureshi', iconName: 'Activity', color: 'text-teal-500', bg: 'bg-teal-50', staff: 12, activePatients: 65, status: 'Active' }
     ];
-    await Department.insertMany(depts);
+    await prisma.department.createMany({ data: depts });
 
     // 2. Seed Doctors
     const doctors = [
@@ -31,7 +42,7 @@ export async function POST() {
       { name: 'Dr. Maria Ahmed', email: 'maria@citycare.com', phone: '+92 302 3456789', avatar: 'https://i.pravatar.cc/150?u=13', dept: 'Orthopedics', qual: 'MBBS, MS', experience: 12, status: 'Active' },
       { name: 'Dr. Hamza Qureshi', email: 'hamza@citycare.com', phone: '+92 303 4567890', avatar: 'https://i.pravatar.cc/150?u=14', dept: 'Dermatology', qual: 'MBBS, MD', experience: 5, status: 'On Leave' },
     ];
-    await Doctor.insertMany(doctors);
+    await prisma.doctor.createMany({ data: doctors });
 
     // 3. Seed Patients
     const patients = [
@@ -41,7 +52,7 @@ export async function POST() {
       { name: 'Ayesha Malik', email: 'ayesha@example.com', phone: '+92 313 4455667', avatar: 'https://i.pravatar.cc/150?u=24', gender: 'Female', age: 50, bloodGroup: 'AB+', lastVisit: 'May 23, 2024', status: 'Inactive' },
       { name: 'Bilal Tariq', email: 'bilal@example.com', phone: '+92 314 5566778', avatar: 'https://i.pravatar.cc/150?u=25', gender: 'Male', age: 38, bloodGroup: 'O-', lastVisit: 'May 24, 2024', status: 'Active' },
     ];
-    await Patient.insertMany(patients);
+    await prisma.patient.createMany({ data: patients });
 
     // 4. Seed Appointments
     const appointments = [
@@ -51,7 +62,7 @@ export async function POST() {
       { patientName: 'Ayesha Malik', phone: '+92 313 4455667', pAvatar: 'https://i.pravatar.cc/150?u=24', doctorName: 'Dr. Hamza Qureshi', docQual: 'MBBS, MD', dAvatar: 'https://i.pravatar.cc/150?u=14', dept: 'Dermatology', date: 'May 27, 2024', time: '09:00 AM', status: 'Cancelled', payment: 'Refunded', amount: 1500 },
       { patientName: 'Bilal Tariq', phone: '+92 314 5566778', pAvatar: 'https://i.pravatar.cc/150?u=25', doctorName: 'Dr. Sarah Khan', docQual: 'MBBS, FCPS', dAvatar: 'https://i.pravatar.cc/150?u=11', dept: 'Cardiology', date: 'May 27, 2024', time: '03:30 PM', status: 'Confirmed', payment: 'Paid', amount: 2000 },
     ];
-    await Appointment.insertMany(appointments);
+    await prisma.appointment.createMany({ data: appointments });
 
     return NextResponse.json({ success: true, message: 'Database seeded successfully' });
 

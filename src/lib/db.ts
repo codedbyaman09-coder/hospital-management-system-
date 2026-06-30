@@ -1,42 +1,19 @@
-import mongoose from 'mongoose';
+import { PrismaClient } from '@prisma/client';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let cached = (global as any).mongoose;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-if (!cached) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cached = (global as any).mongoose = { conn: null, promise: null };
-}
-
-async function connectToDatabase() {
-  if (cached.conn) {
-    return cached.conn;
+export async function connectDB() {
+  try {
+    // Prisma connects lazily, but we can force a connection test:
+    await prisma.$connect();
+    console.log('MongoDB connection logic replaced with Prisma MySQL');
+  } catch (error) {
+    console.error('Prisma connection error:', error);
   }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
-      return mongoose;
-    });
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
 }
-
-export default connectToDatabase;

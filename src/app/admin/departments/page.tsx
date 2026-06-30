@@ -151,11 +151,16 @@ const mockDepartments = [
 ];
 
 export default function DepartmentsPage() {
-  const [departments] = useState(mockDepartments);
+  const [departments, setDepartments] = useState(mockDepartments);
   const [isCreating, setIsCreating] = useState(false);
 
+  const handleSaveDepartment = (newDept: any) => {
+    setDepartments([newDept, ...departments]);
+    setIsCreating(false);
+  };
+
   if (isCreating) {
-    return <NewDepartmentForm onClose={() => setIsCreating(false)} />;
+    return <NewDepartmentForm onClose={() => setIsCreating(false)} onSave={handleSaveDepartment} />;
   }
 
   return (

@@ -18,7 +18,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-10 w-full">
+    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-10 w-full print:hidden">
       <div className="flex items-center">
         <button 
           onClick={toggleSidebar}

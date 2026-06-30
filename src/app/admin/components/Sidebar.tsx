@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen = false, setIsOpen = () => {} }: { isOp
     { name: 'Doctors', icon: User, active: pathname === '/admin/doctors', href: '/admin/doctors' },
     { name: 'Departments', icon: Building, active: pathname === '/admin/departments', href: '/admin/departments' },
     { name: 'Staff', icon: Users, active: pathname === '/admin/staff', href: '/admin/staff' },
-    { name: 'Billing & Payments', icon: DollarSign, active: pathname === '/admin/billing', href: '#' },
+    { name: 'Billing & Payments', icon: DollarSign, active: pathname === '/admin/billing', href: '/admin/billing' },
     { name: 'Pharmacy', icon: Pill, active: pathname === '/admin/pharmacy', href: '#' },
     { name: 'Beds & Rooms', icon: Bed, active: pathname === '/admin/beds', href: '#' },
     { name: 'Reports', icon: FileText, active: pathname === '/admin/reports', href: '#' },
@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen = false, setIsOpen = () => {} }: { isOp
       )}
       
       {/* Sidebar */}
-      <aside className={`w-[260px] h-screen bg-[#111828] text-[#9CA3AF] flex flex-col font-sans shrink-0 fixed left-0 top-0 overflow-hidden z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+      <aside className={`w-[260px] h-screen bg-[#111828] text-[#9CA3AF] flex flex-col font-sans shrink-0 fixed left-0 top-0 overflow-hidden z-50 transition-transform duration-300 print:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         {/* Logo Section */}
       <div className="flex items-center px-6 py-5">
         <div className="flex items-center">

@@ -334,7 +334,7 @@ export default function PatientsPage() {
                         const itemId = item._id || item.id;
                         return (
                         <tr key={itemId} className="border-b border-gray-50/50 hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.slice(-6) || 'NEW'}</td>
+                          <td className="px-4 py-4 text-xs font-semibold text-gray-500">{itemId?.toString().slice(-6) || 'NEW'}</td>
                           <td className="px-4 py-4">
                             <div className="flex items-center">
                               <img src={item.avatar || 'https://i.pravatar.cc/150?u=999'} alt={item.name} className="w-9 h-9 rounded-full mr-3 object-cover shadow-sm" />

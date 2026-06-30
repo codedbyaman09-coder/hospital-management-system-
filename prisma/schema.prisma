@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Appointment {
+  id          Int      @id @default(autoincrement())
+  patientName String
+  phone       String
+  pAvatar     String?
+  doctorName  String
+  docQual     String?
+  dAvatar     String?
+  dept        String
+  date        String
+  time        String
+  status      String
+  payment     String
+  amount      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Department {
+  id             Int      @id @default(autoincrement())
+  name           String
+  head           String
+  iconName       String   @default("Building")
+  color          String   @default("text-blue-500")
+  bg             String   @default("bg-blue-50")
+  staff          Int      @default(0)
+  activePatients Int      @default(0)
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Doctor {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String
+  avatar     String   @default("https://i.pravatar.cc/150")
+  dept       String
+  qual       String
+  experience Int
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Patient {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String
+  avatar     String   @default("https://i.pravatar.cc/150")
+  gender     String
+  age        Int
+  bloodGroup String
+  lastVisit  String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Staff {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String
+  avatar     String   @default("https://i.pravatar.cc/150")
+  role       String
+  department String
+  shift      String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model User {
+  id                     Int       @id @default(autoincrement())
+  fullName               String
+  email                  String    @unique
+  phone                  String?
+  password               String
+  role                   String    @default("Patient")
+  avatar                 String    @default("")
+  isVerified             Boolean   @default(false)
+  emailVerificationToken String?
+  passwordResetToken     String?
+  passwordResetExpires   DateTime?
+  refreshToken           String?   @db.Text
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
