@@ -19,7 +19,7 @@ export default function Sidebar({ isOpen = false, setIsOpen = () => {} }: { isOp
     { name: 'Departments', icon: Building, active: pathname === '/admin/departments', href: '/admin/departments' },
     { name: 'Staff', icon: Users, active: pathname === '/admin/staff', href: '/admin/staff' },
     { name: 'Billing & Payments', icon: DollarSign, active: pathname === '/admin/billing', href: '/admin/billing' },
-    { name: 'Pharmacy', icon: Pill, active: pathname === '/admin/pharmacy', href: '#' },
+    { name: 'Pharmacy', icon: Pill, active: pathname === '/admin/pharmacy', href: '/admin/pharmacy' },
     { name: 'Beds & Rooms', icon: Bed, active: pathname === '/admin/beds', href: '#' },
     { name: 'Reports', icon: FileText, active: pathname === '/admin/reports', href: '#' },
     { name: 'Messages', icon: Mail, badge: '5', active: pathname === '/admin/messages', href: '#' },

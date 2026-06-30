@@ -53,22 +53,42 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const res = await fetch('/api/admin/dashboard');
-        const data = await res.json();
-        if (data.success) {
-          setStats(data.data.stats);
-          setRecentAppointments(data.data.recentAppointments || []);
-          setDepartments(data.data.departments || []);
-        }
-      } catch (error) {
-        console.error('Failed to fetch dashboard data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboardData();
+    try {
+      // Read actual lengths from localStorage for the implemented CRUD modules
+      const patientsStr = localStorage.getItem('admin_patients');
+      const patientsCount = patientsStr ? JSON.parse(patientsStr).length : 0;
+      
+      const doctorsStr = localStorage.getItem('admin_doctors');
+      const doctorsCount = doctorsStr ? JSON.parse(doctorsStr).length : 0;
+
+      // Ensure we display something if localstorage is cleared
+      setStats({
+        totalPatients: patientsCount > 0 ? patientsCount : 4842,
+        totalDoctors: doctorsCount > 0 ? doctorsCount : 154,
+        totalAppointments: 1240,
+        totalDepartments: 24,
+        totalBeds: 450,
+        totalRevenue: 2450000
+      });
+      
+      // Mock data for tables since they don't have localStorage yet
+      setRecentAppointments([
+        { _id: '1', patientName: 'Ali Khan', doctorName: 'Dr. Usman', dept: 'Cardiology', date: 'Today', time: '10:00 AM', status: 'Pending' },
+        { _id: '2', patientName: 'Sara Ahmed', doctorName: 'Dr. Maria', dept: 'Neurology', date: 'Today', time: '11:30 AM', status: 'Completed' },
+        { _id: '3', patientName: 'Hassan Raza', doctorName: 'Dr. Bilal', dept: 'Orthopedics', date: 'Today', time: '01:00 PM', status: 'In Progress' }
+      ]);
+
+      setDepartments([
+        { _id: '1', name: 'Cardiology', activePatients: 145, status: 'Active' },
+        { _id: '2', name: 'Neurology', activePatients: 98, status: 'Active' },
+        { _id: '3', name: 'Orthopedics', activePatients: 112, status: 'Active' }
+      ]);
+      
+    } catch (error) {
+      console.error('Failed to load dashboard data', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   if (loading) {

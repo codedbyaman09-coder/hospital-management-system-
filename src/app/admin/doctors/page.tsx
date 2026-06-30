@@ -73,18 +73,15 @@ export default function DoctorsPage() {
   const [avatarBase64, setAvatarBase64] = useState<string>('');
 
   React.useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const res = await fetch('/api/admin/doctors');
-        const json = await res.json();
-        if (json.success) setDoctors(json.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDoctors();
+    const saved = localStorage.getItem('admin_doctors');
+    if (saved) {
+      setDoctors(JSON.parse(saved));
+    } else {
+      const defaultDoctors = generateFakeDoctors(12);
+      localStorage.setItem('admin_doctors', JSON.stringify(defaultDoctors));
+      setDoctors(defaultDoctors);
+    }
+    setLoading(false);
   }, []);
 
   const filteredDoctors = doctors.filter(doc => {
@@ -107,7 +104,9 @@ export default function DoctorsPage() {
 
   const handleDelete = () => {
     if (deletingId) {
-      setDoctors(doctors.filter((d) => d._id !== deletingId && d.id !== deletingId));
+      const updated = doctors.filter((d) => d._id !== deletingId && d.id !== deletingId);
+      setDoctors(updated);
+      localStorage.setItem('admin_doctors', JSON.stringify(updated));
       setDeletingId(null);
     }
   };
@@ -327,12 +326,15 @@ export default function DoctorsPage() {
             setEditingDoctor(null);
           }}
           onCreated={(doctor) => {
+            let updated;
             if (editingDoctor) {
               const editId = editingDoctor._id || editingDoctor.id;
-              setDoctors(doctors.map((d) => (d._id || d.id) === editId ? { ...d, ...doctor } : d));
+              updated = doctors.map((d) => (d._id || d.id) === editId ? { ...d, ...doctor } : d);
             } else {
-              setDoctors([doctor, ...doctors]);
+              updated = [{...doctor, id: doctor.id || `#DOC-${Math.floor(10000 + Math.random() * 90000)}`}, ...doctors];
             }
+            setDoctors(updated);
+            localStorage.setItem('admin_doctors', JSON.stringify(updated));
             setIsAddModalOpen(false);
             setEditingDoctor(null);
           }}

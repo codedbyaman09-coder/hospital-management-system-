@@ -78,18 +78,15 @@ export default function PatientsPage() {
   const [viewingPatient, setViewingPatient] = useState<Patient | null>(null);
 
   React.useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const res = await fetch('/api/admin/patients');
-        const json = await res.json();
-        if (json.success) setPatients(json.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPatients();
+    const saved = localStorage.getItem('admin_patients');
+    if (saved) {
+      setPatients(JSON.parse(saved));
+    } else {
+      const defaultPatients = generateFakePatients(15);
+      localStorage.setItem('admin_patients', JSON.stringify(defaultPatients));
+      setPatients(defaultPatients);
+    }
+    setLoading(false);
   }, []);
 
   const filteredPatients = patients.filter(patient => {
@@ -125,7 +122,9 @@ export default function PatientsPage() {
 
   const handleDelete = () => {
     if (deletingId) {
-      setPatients(patients.filter((p) => p._id !== deletingId && p.id !== deletingId));
+      const updated = patients.filter((p) => p._id !== deletingId && p.id !== deletingId);
+      setPatients(updated);
+      localStorage.setItem('admin_patients', JSON.stringify(updated));
       setDeletingId(null);
     }
   };
@@ -141,11 +140,14 @@ export default function PatientsPage() {
             setEditingPatient(null);
           }}
           onCreated={(data) => {
+            let updated;
             if (editingPatient) {
-              setPatients(patients.map(p => (p._id || p.id) === (editingPatient._id || editingPatient.id) ? { ...p, ...data } : p));
+              updated = patients.map(p => (p._id || p.id) === (editingPatient._id || editingPatient.id) ? { ...p, ...data } : p);
             } else {
-              setPatients([data, ...patients]);
+              updated = [{...data, id: data.id || `#PAT-${Math.floor(10000 + Math.random() * 90000)}`}, ...patients];
             }
+            setPatients(updated);
+            localStorage.setItem('admin_patients', JSON.stringify(updated));
             setIsAddModalOpen(false);
             setEditingPatient(null);
           }}

@@ -115,21 +115,10 @@ export default function NewDoctorForm({ onClose, onCreated, initialData }: NewDo
       return;
     }
 
-    try {
-      const res = await fetch('/api/admin/doctors', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(doctorData),
-      });
-      const json = await res.json();
-      if (json.success) {
-        onCreated(json.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
+    setTimeout(() => {
+      onCreated(doctorData as Doctor);
       setSubmitting(false);
-    }
+    }, 300);
   };
 
   return (

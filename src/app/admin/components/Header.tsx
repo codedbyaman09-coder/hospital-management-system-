@@ -1,12 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import { Menu, Calendar, ChevronDown, Search, Bell, Globe, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const getPageTitle = (path: string) => {
+    if (path.includes('/pharmacy')) return 'Pharmacy';
+    if (path.includes('/appointments')) return 'Appointments';
+    if (path.includes('/patients')) return 'Patients';
+    if (path.includes('/doctors')) return 'Doctors';
+    if (path.includes('/departments')) return 'Departments';
+    if (path.includes('/staff')) return 'Staff';
+    if (path.includes('/billing')) return 'Billing & Payments';
+    return 'Dashboard';
+  };
+  const title = getPageTitle(pathname || '');
 
   const handleLogout = async () => {
     try {
@@ -26,8 +39,19 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         >
           <Menu className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
+        <h1 className="text-xl font-bold text-gray-800">{title}</h1>
       </div>
+
+      {title === 'Pharmacy' && (
+        <div className="hidden lg:flex flex-1 max-w-xl mx-8 relative">
+          <input 
+            type="text" 
+            placeholder="Search medicine, category, supplier..." 
+            className="w-full pl-4 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+          />
+          <Search className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
+        </div>
+      )}
 
       <div className="flex items-center space-x-5">
         {/* Date Picker Mock */}
@@ -39,9 +63,11 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
 
         {/* Action Icons */}
         <div className="flex items-center space-x-4">
-          <button className="text-gray-500 hover:text-gray-700 transition-colors">
-            <Search className="w-5 h-5" />
-          </button>
+          {title !== 'Pharmacy' && (
+            <button className="text-gray-500 hover:text-gray-700 transition-colors">
+              <Search className="w-5 h-5" />
+            </button>
+          )}
           
           <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
             <Bell className="w-5 h-5" />

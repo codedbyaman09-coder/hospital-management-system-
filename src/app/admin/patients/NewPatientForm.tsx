@@ -77,21 +77,10 @@ export default function NewPatientForm({ onClose, onCreated, initialData }: NewP
       return;
     }
 
-    try {
-      const res = await fetch('/api/admin/patients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patientData),
-      });
-      const json = await res.json();
-      if (json.success) {
-        onCreated(json.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
+    setTimeout(() => {
+      onCreated(patientData as Patient);
       setSubmitting(false);
-    }
+    }, 300);
   };
 
   return (
