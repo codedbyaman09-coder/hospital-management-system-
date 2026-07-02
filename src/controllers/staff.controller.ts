@@ -28,6 +28,35 @@ export class StaffController {
       return NextResponse.json({ success: false, error: message }, { status: 500 });
     }
   }
+
+  async updateStaff(req: Request, { params }: { params: { id: string } }) {
+    try {
+      const id = parseInt(params.id, 10);
+      if (isNaN(id)) {
+        return NextResponse.json({ success: false, error: 'Invalid ID' }, { status: 400 });
+      }
+      const body = await req.json();
+      const record = await this.service.updateStaff(id, body);
+      return NextResponse.json({ success: true, data: record });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Internal Server Error';
+      return NextResponse.json({ success: false, error: message }, { status: 500 });
+    }
+  }
+
+  async deleteStaff(req: Request, { params }: { params: { id: string } }) {
+    try {
+      const id = parseInt(params.id, 10);
+      if (isNaN(id)) {
+        return NextResponse.json({ success: false, error: 'Invalid ID' }, { status: 400 });
+      }
+      await this.service.deleteStaff(id);
+      return NextResponse.json({ success: true, data: { id } });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Internal Server Error';
+      return NextResponse.json({ success: false, error: message }, { status: 500 });
+    }
+  }
 }
 
 export const staffController = new StaffController();
