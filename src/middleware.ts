@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
   // 2. If user is trying to access a protected dashboard but has no token,
   // redirect them to the login page.
-  const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
+  const isProtectedPath = protectedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
   if (!token && isProtectedPath) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
