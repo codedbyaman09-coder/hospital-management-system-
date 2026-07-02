@@ -99,3 +99,14 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 }
+
+model Bed {
+  id          Int      @id @default(autoincrement())
+  bedNumber   String
+  roomNumber  String
+  roomType    String
+  status      String
+  patientName String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
