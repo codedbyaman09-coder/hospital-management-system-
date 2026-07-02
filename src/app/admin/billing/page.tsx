@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { 
   FileText, TrendingUp, CheckCircle, Clock, XCircle, Search, Calendar, ChevronDown, Eye, Printer, MoreVertical
@@ -38,6 +38,30 @@ const invoices = [
 ];
 
 export default function BillingPaymentsPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDate, setSelectedDate] = useState('All');
+  const [selectedDept, setSelectedDept] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedPayStatus, setSelectedPayStatus] = useState('All');
+
+  const filteredInvoices = useMemo(() => {
+    return invoices.filter(inv => {
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        if (!inv.id.toLowerCase().includes(q) && !inv.patient.toLowerCase().includes(q)) return false;
+      }
+      if (selectedDate !== 'All' && inv.date !== selectedDate) return false;
+      if (selectedDept !== 'All' && inv.dept !== selectedDept) return false;
+      if (selectedStatus !== 'All' && inv.status !== selectedStatus) return false;
+      if (selectedPayStatus !== 'All' && inv.payStatus !== selectedPayStatus) return false;
+      return true;
+    });
+  }, [searchQuery, selectedDate, selectedDept, selectedStatus, selectedPayStatus]);
+
+  const uniqueDates = Array.from(new Set(invoices.map(i => i.date)));
+  const uniqueDepts = Array.from(new Set(invoices.map(i => i.dept)));
+  const uniqueStatuses = Array.from(new Set(invoices.map(i => i.status)));
+  const uniquePayStatuses = Array.from(new Set(invoices.map(i => i.payStatus)));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -152,44 +176,68 @@ export default function BillingPaymentsPage() {
             <div className="lg:col-span-3 bg-white border border-gray-100 rounded-xl shadow-sm p-6">
               
               {/* Filters */}
-              <div className="flex gap-4 mb-6">
-                <div className="relative flex-1">
+              <div className="flex gap-4 mb-6 flex-wrap">
+                <div className="relative flex-1 min-w-[200px]">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input type="text" placeholder="Search by invoice no., patient name..." className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors" />
+                  <input 
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search by invoice no., patient name..." 
+                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors" 
+                  />
                 </div>
                 
-                <div className="w-48">
-                  <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Date Range</label>
-                  <button className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>May 20, 2024 - May 20, 2024</span>
-                    </div>
-                  </button>
+                <div className="w-40 relative">
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Date</label>
+                  <select 
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="appearance-none w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-blue-500 transition-colors"
+                  >
+                    <option value="All">All Dates</option>
+                    {uniqueDates.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-[26px] w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
                 
-                <div className="w-40">
+                <div className="w-40 relative">
                   <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Department</label>
-                  <button className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white">
-                    <span>All Departments</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                  </button>
+                  <select 
+                    value={selectedDept}
+                    onChange={(e) => setSelectedDept(e.target.value)}
+                    className="appearance-none w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-blue-500 transition-colors"
+                  >
+                    <option value="All">All Departments</option>
+                    {uniqueDepts.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-[26px] w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
                 
-                <div className="w-32">
+                <div className="w-32 relative">
                   <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Status</label>
-                  <button className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white">
-                    <span>All Status</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                  </button>
+                  <select 
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="appearance-none w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-blue-500 transition-colors"
+                  >
+                    <option value="All">All Status</option>
+                    {uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-[26px] w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
                 
-                <div className="w-32">
+                <div className="w-32 relative">
                   <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Payment Status</label>
-                  <button className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white">
-                    <span>All</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                  </button>
+                  <select 
+                    value={selectedPayStatus}
+                    onChange={(e) => setSelectedPayStatus(e.target.value)}
+                    className="appearance-none w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-blue-500 transition-colors"
+                  >
+                    <option value="All">All</option>
+                    {uniquePayStatuses.map(ps => <option key={ps} value={ps}>{ps}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-[26px] w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
               </div>
 
@@ -211,7 +259,7 @@ export default function BillingPaymentsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {invoices.map((inv, idx) => (
+                    {filteredInvoices.length > 0 ? filteredInvoices.map((inv, idx) => (
                       <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
                         <td className="py-4 px-2 text-[13px] font-medium text-blue-600">{inv.id}</td>
                         <td className="py-4 px-2">
@@ -255,14 +303,18 @@ export default function BillingPaymentsPage() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )) : (
+                      <tr>
+                        <td colSpan={10} className="py-8 text-center text-gray-500">No invoices match your filters.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6">
-                <span className="text-xs font-medium text-gray-500">Showing 1 to 10 of 1,248 entries</span>
+                <span className="text-xs font-medium text-gray-500">Showing {filteredInvoices.length > 0 ? 1 : 0} to {filteredInvoices.length} of {invoices.length} entries</span>
                 <div className="flex items-center gap-1">
                   <button className="w-8 h-8 rounded border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50">&lt;</button>
                   <button className="w-8 h-8 rounded bg-blue-600 text-white font-medium text-xs flex items-center justify-center shadow-sm">1</button>
