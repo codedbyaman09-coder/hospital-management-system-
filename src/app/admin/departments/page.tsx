@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building, Plus, Edit2, Trash2,
   CheckCircle, Heart, Brain, Bone, Eye, Activity, Menu, ChevronRight, Search, Calendar, Bell, Mail, ChevronDown, Download, Filter, User
@@ -153,10 +153,93 @@ const mockDepartments = [
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState(mockDepartments);
   const [isCreating, setIsCreating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [headFilter, setHeadFilter] = useState('All Heads');
+  const [sortBy, setSortBy] = useState('Department Name');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, headFilter, sortBy]);
+
+  const uniqueHeads = Array.from(new Set(mockDepartments.map(d => d.head)));
+
+  let filteredDepartments = departments.filter(dept => {
+    const matchesSearch = dept.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'All Status' || dept.status === statusFilter;
+    const matchesHead = headFilter === 'All Heads' || dept.head === headFilter;
+    return matchesSearch && matchesStatus && matchesHead;
+  });
+
+  if (sortBy === 'Department Name') {
+    filteredDepartments.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortBy === 'Doctors (High to Low)') {
+    filteredDepartments.sort((a, b) => b.doctors - a.doctors);
+  } else if (sortBy === 'Doctors (Low to High)') {
+    filteredDepartments.sort((a, b) => a.doctors - b.doctors);
+  } else if (sortBy === 'Staff (High to Low)') {
+    filteredDepartments.sort((a, b) => b.staff - a.staff);
+  }
+
+  const totalPages = Math.ceil(filteredDepartments.length / itemsPerPage);
+  const paginatedDepartments = filteredDepartments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(filteredDepartments.map(d => d.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id: number) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    setDepartments(departments.filter(d => d.id !== id));
+    setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
+  };
 
   const handleSaveDepartment = (newDept: any) => {
     setDepartments([newDept, ...departments]);
     setIsCreating(false);
+  };
+
+  const handleExport = () => {
+    const headers = ['ID', 'Department Name', 'Head of Department', 'Qualification', 'Description', 'Total Doctors', 'Total Staff', 'Status'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredDepartments.map(dept => 
+        [
+          dept.id,
+          `"${dept.name}"`,
+          `"${dept.head}"`,
+          `"${dept.qualification}"`,
+          `"${dept.description}"`,
+          dept.doctors,
+          dept.staff,
+          dept.status
+        ].join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'departments_export.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (isCreating) {
@@ -185,7 +268,13 @@ export default function DepartmentsPage() {
         <div className="flex items-center space-x-5">
           {/* Search Bar */}
           <div className="hidden md:flex items-center bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-[240px]">
-            <input type="text" placeholder="Search department..." className="w-full outline-none text-gray-600 placeholder-gray-400 text-xs" />
+            <input 
+              type="text" 
+              placeholder="Search department..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full outline-none text-gray-600 placeholder-gray-400 text-xs" 
+            />
             <Search className="w-3.5 h-3.5 text-gray-400 ml-2 shrink-0" />
           </div>
 
@@ -288,6 +377,8 @@ export default function DepartmentsPage() {
                 <input 
                   type="text" 
                   placeholder="Search department..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-3 pr-8 py-1 border border-gray-200 rounded-lg text-[11px] font-bold outline-none w-[150px] text-[#1e1b4b] placeholder-gray-500 focus:border-blue-500" 
                 />
                 <Search className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2.5 top-1/2 -translate-y-1/2" />
@@ -295,7 +386,10 @@ export default function DepartmentsPage() {
               
               <div className="flex flex-col relative w-[100px]">
                 <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Status</label>
-                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                <select 
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
                   <option>All Status</option>
                   <option>Active</option>
                   <option>Inactive</option>
@@ -305,16 +399,28 @@ export default function DepartmentsPage() {
 
               <div className="flex flex-col relative w-[130px]">
                 <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Head of Department</label>
-                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                <select 
+                  value={headFilter}
+                  onChange={(e) => setHeadFilter(e.target.value)}
+                  className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
                   <option>All Heads</option>
+                  {uniqueHeads.map(head => (
+                    <option key={head}>{head}</option>
+                  ))}
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
 
               <div className="flex flex-col relative w-[120px]">
                 <label className="text-[10px] text-[#1e1b4b] font-bold absolute -top-2 left-2 bg-white px-1 z-10">Sort By</label>
-                <select className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-2.5 py-1 border border-gray-200 rounded-lg text-[11px] font-bold text-[#1e1b4b] outline-none appearance-none bg-white focus:border-blue-500">
                   <option>Department Name</option>
+                  <option>Doctors (High to Low)</option>
+                  <option>Doctors (Low to High)</option>
+                  <option>Staff (High to Low)</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-[#1e1b4b] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
@@ -324,7 +430,7 @@ export default function DepartmentsPage() {
               <button className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
                 <Filter className="w-3.5 h-3.5" /> Filters
               </button>
-              <button className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
+              <button onClick={handleExport} className="px-3 py-1 border border-blue-200 text-[#0052cc] rounded-lg hover:bg-blue-50 transition-colors text-[12px] font-bold flex items-center gap-2">
                 <Download className="w-3.5 h-3.5" /> Export
               </button>
               <button onClick={() => setIsCreating(true)} className="px-3 py-1 bg-[#0052cc] text-white rounded-lg hover:bg-blue-700 transition-colors text-[12px] font-bold flex items-center gap-2 shadow-sm">
@@ -338,7 +444,14 @@ export default function DepartmentsPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-white border-b border-gray-100">
-                  <th className="px-4 py-2.5 w-12"><input type="checkbox" className="rounded border-gray-300" /></th>
+                  <th className="px-4 py-2.5 w-12">
+                    <input 
+                      type="checkbox" 
+                      onChange={handleSelectAll} 
+                      checked={selectedIds.length === filteredDepartments.length && filteredDepartments.length > 0} 
+                      className="rounded border-gray-300" 
+                    />
+                  </th>
                   <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">#</th>
                   <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">Department Name</th>
                   <th className="px-4 py-2.5 text-[11px] font-bold text-gray-900 uppercase">Head of Department</th>
@@ -350,12 +463,19 @@ export default function DepartmentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {departments.map((dept, index) => {
+                {paginatedDepartments.map((dept, index) => {
                   const Icon = dept.icon;
                   return (
                     <tr key={dept.id} className="hover:bg-gray-50/50 transition-colors bg-white">
-                      <td className="px-4 py-2.5"><input type="checkbox" className="rounded border-gray-300" /></td>
-                      <td className="px-4 py-2.5 text-[13px] font-bold text-gray-900">{index + 1}</td>
+                      <td className="px-4 py-2.5">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedIds.includes(dept.id)} 
+                          onChange={() => handleSelectOne(dept.id)} 
+                          className="rounded border-gray-300" 
+                        />
+                      </td>
+                      <td className="px-4 py-2.5 text-[13px] font-bold text-gray-900">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-lg ${dept.iconBg} flex items-center justify-center shrink-0`}>
@@ -389,7 +509,7 @@ export default function DepartmentsPage() {
                           <button className="w-7 h-7 rounded border border-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors">
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                          <button className="w-7 h-7 rounded border border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
+                          <button onClick={() => handleDelete(dept.id)} className="w-7 h-7 rounded border border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -403,12 +523,33 @@ export default function DepartmentsPage() {
           
           {/* Pagination */}
           <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
-            <div className="text-[12px] font-bold text-gray-700">Showing 1 to 10 of 15 entries</div>
+            <div className="text-[12px] font-bold text-gray-700">
+              Showing {filteredDepartments.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredDepartments.length)} of {filteredDepartments.length} entries
+            </div>
             <div className="flex gap-1.5 items-center">
-              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">&lt;</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-[#0052cc] rounded text-white bg-[#0052cc] text-xs font-bold">1</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">2</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white">&gt;</button>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white disabled:opacity-50">&lt;</button>
+              
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button 
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`w-7 h-7 flex items-center justify-center border rounded text-xs font-bold ${
+                    currentPage === i + 1 
+                      ? 'border-[#0052cc] text-white bg-[#0052cc]' 
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50 bg-white'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-gray-600 hover:bg-gray-50 text-xs font-bold bg-white disabled:opacity-50">&gt;</button>
             </div>
           </div>
 
