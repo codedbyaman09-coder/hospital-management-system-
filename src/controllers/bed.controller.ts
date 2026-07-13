@@ -29,9 +29,10 @@ export class BedController {
     }
   }
 
-  async updateBed(req: Request, { params }: { params: { id: string } }) {
+  async updateBed(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-      const id = parseInt(params.id, 10);
+      const resolvedParams = await params;
+      const id = parseInt(resolvedParams.id, 10);
       if (isNaN(id)) {
         return NextResponse.json({ success: false, error: 'Invalid ID' }, { status: 400 });
       }
@@ -44,9 +45,10 @@ export class BedController {
     }
   }
 
-  async deleteBed(req: Request, { params }: { params: { id: string } }) {
+  async deleteBed(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-      const id = parseInt(params.id, 10);
+      const resolvedParams = await params;
+      const id = parseInt(resolvedParams.id, 10);
       if (isNaN(id)) {
         return NextResponse.json({ success: false, error: 'Invalid ID' }, { status: 400 });
       }

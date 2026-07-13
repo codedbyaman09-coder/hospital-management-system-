@@ -1,0 +1,157 @@
+# new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-11, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-10, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-9, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-8, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-7, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-6, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-5, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-4, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-3, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like # new project, Untitled-2, markdown, and # new project
+
+dfd
+
+Source: workspace
+
+---
+
+# new project 
+
+Use editor context variables like schemaVersion: 1, .prompts\new-project.prompt.yaml, yaml, and schemaVersion: 1
+id: bd7ad5b1-41e5-4aad-9b1e-c4674d21885e
+title: "new project "
+description: dfd
+category: fdfdf
+tags: []
+body: |-
+  # new project 
+
+  Use editor context variables like {{selection}}, {{filepath}}, {{lang}}, and {{file_content}}.
+
+  Write the prompt body here.
+createdAt: "2026-06-28T16:28:49.824Z"
+updatedAt: "2026-06-28T16:28:49.824Z"
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.
+.
+
+Write the prompt body here.

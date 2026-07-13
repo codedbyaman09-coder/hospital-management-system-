@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 // Define paths that require authentication
 const protectedPaths = ['/admin', '/patient', '/doctor', '/staff'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Get the token from cookies
